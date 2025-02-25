@@ -12,7 +12,15 @@ test('user accounts can be deleted', function () {
         ->set('password', 'password')
         ->call('deleteUser');
 
-    expect($user->fresh())->toBeNull();
+    $deletedUser = $user->fresh();
+
+    $this->assertSoftDeleted('users', [
+        'id' => $deletedUser->id,
+        'name' => $deletedUser->name,
+        'email' => $deletedUser->email,
+    ]);
+
+    expect($deletedUser->deleted_at)->not()->toBeNull();
 })->skip(function () {
     return ! Features::hasAccountDeletionFeatures();
 }, 'Account deletion is not enabled.');
@@ -25,7 +33,7 @@ test('correct password must be provided before account can be deleted', function
         ->call('deleteUser')
         ->assertHasErrors(['password']);
 
-    expect($user->fresh())->not->toBeNull();
+    expect($user->fresh()->deleted_at)->toBeNull()->and($user->fresh())->not->toBeNull();
 })->skip(function () {
     return ! Features::hasAccountDeletionFeatures();
 }, 'Account deletion is not enabled.');
