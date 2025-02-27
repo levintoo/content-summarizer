@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+    font-family: 'Outfit';
+    font-display: swap;
+    src: url(../fonts/outfit-variable-compressed.woff2) format('truetype');
+}
+
+* {
+    font-family: 'Outfit', serif;
+}
+
 [x-cloak] {
     display: none;
 }

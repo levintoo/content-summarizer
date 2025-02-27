@@ -1,4 +1,4 @@
-<x-form-section submit="updateProfileInformation">
+<x-old.form-section submit="updateProfileInformation">
     <x-slot name="title">
         {{ __('Profile Information') }}
     </x-slot>
@@ -10,7 +10,7 @@
     <x-slot name="form">
         <!-- Profile Photo -->
         @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-            <div x-data="{photoName: null, photoPreview: null}" class="col-span-6 sm:col-span-4">
+            <div x-data="{photoName: null, photoPreview: null}" class="col-span-6">
                 <!-- Profile Photo File Input -->
                 <input type="file" id="photo" class="hidden"
                             wire:model.live="photo"
@@ -38,32 +38,28 @@
                     </span>
                 </div>
 
-                <x-secondary-button class="mt-2 me-2" type="button" x-on:click.prevent="$refs.photo.click()">
+                <x-old.secondary-button class="mt-2 me-2" type="button" x-on:click.prevent="$refs.photo.click()">
                     {{ __('Select A New Photo') }}
-                </x-secondary-button>
+                </x-old.secondary-button>
 
                 @if ($this->user->profile_photo_path)
-                    <x-secondary-button type="button" class="mt-2" wire:click="deleteProfilePhoto">
+                    <x-old.secondary-button type="button" class="mt-2" wire:click="deleteProfilePhoto">
                         {{ __('Remove Photo') }}
-                    </x-secondary-button>
+                    </x-old.secondary-button>
                 @endif
 
-                <x-input-error for="photo" class="mt-2" />
+                <x-old.input-error for="photo" class="mt-2" />
             </div>
         @endif
 
         <!-- Name -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="name" value="{{ __('Name') }}" />
-            <x-input id="name" type="text" class="mt-1 block w-full" wire:model="state.name" required autocomplete="name" />
-            <x-input-error for="name" class="mt-2" />
+        <div class="col-span-6">
+            <x-input icon="user" placeholder="John Doe" shadow="none" label="Name" name="name" type="text" class="mt-1 block w-full" wire:model="state.name" required autocomplete="name" />
         </div>
 
         <!-- Email -->
-        <div class="col-span-6 sm:col-span-4">
-            <x-label for="email" value="{{ __('Email') }}" />
-            <x-input id="email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="username" />
-            <x-input-error for="email" class="mt-2" />
+        <div class="col-span-6">
+            <x-input icon="envelope" placeholder="johndoe@example.com" name="email" shadow="none" label="Email" type="email" class="mt-1 block w-full" wire:model="state.email" required autocomplete="username" />
 
             @if (Laravel\Fortify\Features::enabled(Laravel\Fortify\Features::emailVerification()) && ! $this->user->hasVerifiedEmail())
                 <p class="text-sm mt-2 dark:text-white">
@@ -84,12 +80,12 @@
     </x-slot>
 
     <x-slot name="actions">
-        <x-action-message class="me-3" on="saved">
+        <x-old.action-message class="me-3" on="saved">
             {{ __('Saved.') }}
-        </x-action-message>
+        </x-old.action-message>
 
-        <x-button wire:loading.attr="disabled" wire:target="photo">
+        <x-button type="submit" wire:ignore wire:loading.attr="disabled" wire:target="photo">
             {{ __('Save') }}
         </x-button>
     </x-slot>
-</x-form-section>
+</x-old.form-section>
