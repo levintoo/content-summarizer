@@ -2,8 +2,8 @@
 
 namespace App\Livewire\Shared;
 
-use Livewire\Component;
 use Laravel\Socialite\Facades\Socialite;
+use Livewire\Component;
 
 class GoogleOAuthComponent extends Component
 {

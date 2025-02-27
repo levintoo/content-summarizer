@@ -9,7 +9,7 @@
 
     <x-slot name="content">
         @if (count($this->sessions) > 0)
-            <div class="space-y-6 border rounded-lg p-3">
+            <div class="space-y-6 border rounded-lg p-4 border-slate-200">
                 <!-- Other Browser Sessions -->
                 @foreach ($this->sessions as $session)
                     <div class="flex items-center">

@@ -114,7 +114,7 @@
 
                         <li>
                             <x-nav-link wire:navigate href="{{ route('profile.show') }}" active="{{ request()->routeIs('profile.show') }}">
-                                <x-hugeicons-note class="size-5.5"/>
+                                <x-hugeicons-credit-card-pos class="size-5.5"/>
                                 <span>Account & Billing</span>
                             </x-nav-link>
                         </li>

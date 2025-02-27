@@ -1,7 +1,9 @@
 <?php
 
+use App\Livewire\AccountComponent;
 use App\Livewire\CreateSummaryComponent;
 use App\Livewire\PreferencesComponent;
+use App\Livewire\SettingsComponent;
 use App\Livewire\ShowSummaryComponent;
 use App\Livewire\SummariesComponent;
 use Illuminate\Support\Facades\Route;
@@ -17,4 +19,6 @@ Route::middleware([
     Route::get('/summaries', SummariesComponent::class)->name('summaries');
     Route::get('/summary/create', CreateSummaryComponent::class)->name('summary.create');
     Route::get('/summary/{summary}', ShowSummaryComponent::class)->name('summary.show');
+    Route::get('/account', AccountComponent::class)->name('account');
+    Route::get('/settings', SettingsComponent::class)->name('settings');
 });
