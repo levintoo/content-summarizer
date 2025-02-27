@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum RoleEnum: Int
+enum RoleEnum: int
 {
     case USER = 0;
     case ADMIN = 1;
@@ -20,6 +20,7 @@ enum RoleEnum: Int
                 return strtolower($case->name);
             }
         }
+
         return null;
     }
 }
