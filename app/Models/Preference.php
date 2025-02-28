@@ -24,8 +24,8 @@ class Preference extends Model
     ];
 
     protected $casts = [
-      'use_custom_prompt' => 'boolean',
-      'summary_length' => SummaryLengthEnum::class,
+        'use_custom_prompt' => 'boolean',
+        'summary_length' => SummaryLengthEnum::class,
     ];
 
     public function user(): BelongsTo

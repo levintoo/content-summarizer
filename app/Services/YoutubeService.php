@@ -8,9 +8,9 @@ use Illuminate\Support\Facades\Http;
 
 class YoutubeService
 {
-    function getVideoInfo(string $videoId): ?array
+    public function getVideoInfo(string $videoId): ?array
     {
-        $cacheKey = 'video-info-' . $videoId;
+        $cacheKey = 'video-info-'.$videoId;
 
         $info = Cache::get($cacheKey);
 
@@ -22,7 +22,7 @@ class YoutubeService
 
         $content = file_get_contents($video_url);
 
-        $doc = new \DOMDocument();
+        $doc = new \DOMDocument;
 
         @$doc->loadHTML($content);
 
@@ -32,9 +32,9 @@ class YoutubeService
 
         $channel = json_decode($channelInfo)?->itemListElement[0]?->item?->name;
 
-        $info = $title || $channel ? ['title' => explode(' - YouTube', $title)[0], 'channel' => $channel ?? 'Youtube' ] : null;
+        $info = $title || $channel ? ['title' => explode(' - YouTube', $title)[0], 'channel' => $channel ?? 'Youtube'] : null;
 
-        if($info) {
+        if ($info) {
             Cache::add($cacheKey, $info, 60 * 60 * 24 * 30);
         }
 
@@ -43,20 +43,20 @@ class YoutubeService
 
     public function getTranscriptUrl($videoId): string
     {
-        $transcriptUrl = Cache::remember('transcript-url-' . $videoId, CacheDuration::DAY, function () use ($videoId) {
+        $transcriptUrl = Cache::remember('transcript-url-'.$videoId, CacheDuration::DAY, function () use ($videoId) {
             return Http::post('https://youtubei.googleapis.com/youtubei/v1/player', [
                 'videoId' => $videoId,
-                "context" => [
-                    "client" => [
-                        "hl" => "en",
-                        "clientName" => "WEB",
-                        "clientVersion" => "2.20210721.00.00"
-                    ]
-                ]
-            ])->json("captions.playerCaptionsTracklistRenderer.captionTracks.0.baseUrl");
+                'context' => [
+                    'client' => [
+                        'hl' => 'en',
+                        'clientName' => 'WEB',
+                        'clientVersion' => '2.20210721.00.00',
+                    ],
+                ],
+            ])->json('captions.playerCaptionsTracklistRenderer.captionTracks.0.baseUrl');
         });
 
-        abort_unless($transcriptUrl,404,'Could not retrieve a transcript for the video. This is most likely caused disabled subtitles for this video');
+        abort_unless($transcriptUrl, 404, 'Could not retrieve a transcript for the video. This is most likely caused disabled subtitles for this video');
 
         return $transcriptUrl;
     }
@@ -65,9 +65,9 @@ class YoutubeService
     {
         $transcriptUrl = $this->getTranscriptUrl($videoId);
 
-        return Cache::remember('transcript-' . $videoId, CacheDuration::DAY, function () use($videoId, $transcriptUrl) {
+        return Cache::remember('transcript-'.$videoId, CacheDuration::DAY, function () use ($videoId, $transcriptUrl) {
             return Http::post($transcriptUrl, [
-                "videoId" => $videoId,
+                'videoId' => $videoId,
             ])->body();
         });
     }

@@ -13,7 +13,9 @@ use Illuminate\Support\Facades\Http;
 class PaystackService
 {
     protected string $secretKey;
+
     protected string $paystackUrl;
+
     protected array $headers;
 
     public function __construct()
@@ -22,7 +24,7 @@ class PaystackService
         $this->paystackUrl = config('services.paystack.api');
         $this->headers = [
             'Accept' => 'application/json',
-            'Authorization' => 'Bearer '. config('services.paystack.api_key'),
+            'Authorization' => 'Bearer '.config('services.paystack.api_key'),
             'Content-Type' => 'application/json',
         ];
     }
@@ -32,7 +34,7 @@ class PaystackService
      */
     public function fetchPlan(string $plan_code)
     {
-        $fullURL = $this->paystackUrl . '/plan/' . $plan_code;
+        $fullURL = $this->paystackUrl.'/plan/'.$plan_code;
 
         $res = Http::withHeaders($this->headers)->get($fullURL)->json();
 
@@ -44,15 +46,15 @@ class PaystackService
     /**
      * @throws ConnectionException
      */
-    public function initializeTransaction(User $user, Plan $plan, string $callbackUrl = null)
+    public function initializeTransaction(User $user, Plan $plan, ?string $callbackUrl = null)
     {
-        $api = $this->paystackUrl . '/transaction/initialize';
+        $api = $this->paystackUrl.'/transaction/initialize';
 
         $data = [
             'email' => $user->email,
             'plan' => $plan->plan_code,
             'amount' => $plan->amount,
-            'callback_url' => $callbackUrl ?? route('account')
+            'callback_url' => $callbackUrl ?? route('account'),
         ];
 
         $res = Http::withHeaders($this->headers)->post($api, $data)->json();
@@ -76,7 +78,7 @@ class PaystackService
      */
     public function cancelSubscription(Subscription $subscription)
     {
-        $api = $this->paystackUrl . '/subscription/disable';
+        $api = $this->paystackUrl.'/subscription/disable';
 
         $data = [
             'code' => $subscription->subscription_code,
@@ -88,7 +90,7 @@ class PaystackService
         abort_unless($res['status'], 500, $res['message'] ?? 'Something went wrong');
 
         $subscription->update([
-           'status' => $res['data']['status'],
+            'status' => $res['data']['status'],
         ]);
 
         return $res;

@@ -19,7 +19,7 @@ class ApiKey extends Model
     ];
 
     protected $casts = [
-      'key' => 'encrypted',
+        'key' => 'encrypted',
     ];
 
     public function user(): BelongsTo

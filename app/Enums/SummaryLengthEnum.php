@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum SummaryLengthEnum: Int
+enum SummaryLengthEnum: int
 {
     case brief = 1;
     case balanced = 2;

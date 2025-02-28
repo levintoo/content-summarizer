@@ -21,9 +21,9 @@ class PreferencesComponent extends Component
         $this->models = AiModel::get();
         $this->providers = Provider::get();
 
-//        $preferences = Preference::query()->whereBelongsTo(auth()->user())->firstOrFail();
+        //        $preferences = Preference::query()->whereBelongsTo(auth()->user())->firstOrFail();
 
-//        $this->form->fill($preferences);
+        //        $this->form->fill($preferences);
     }
 
     public function save()

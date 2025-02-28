@@ -34,7 +34,6 @@ class PreferenceResource extends Resource
 
     protected static ?string $navigationGroup = 'Users';
 
-
     public static function form(Form $form): Form
     {
         return $form
@@ -66,11 +65,11 @@ class PreferenceResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Preference $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Preference $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Preference $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Preference $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

@@ -18,8 +18,8 @@ use WireUi\Traits\WireUiActions;
 
 class CreateSummaryComponent extends Component
 {
-    use WireUiActions;
     use ExtractsYouTubeVideoId;
+    use WireUiActions;
 
     #[Validate(['required', 'max:255'])]
     public string $link = 'https://www.youtube.com/watch?v=be_oxleM07U';
@@ -33,7 +33,8 @@ class CreateSummaryComponent extends Component
     #[Validate(['nullable', new enum(SummaryLengthEnum::class)])]
     public SummaryLengthEnum $summary_length;
 
-    public function mount() {
+    public function mount()
+    {
         $this->summary_length = SummaryLengthEnum::balanced;
     }
 
@@ -43,6 +44,7 @@ class CreateSummaryComponent extends Component
             $this->validate();
         } catch (Exception $e) {
             $this->notification()->error($e->getMessage());
+
             return;
         }
 
@@ -57,16 +59,18 @@ class CreateSummaryComponent extends Component
         ];
 
         foreach ($validationChecks as [$condition, $message]) {
-            if (!$condition) {
+            if (! $condition) {
                 $this->notification()->error($message);
+
                 return;
             }
         }
 
         $videoId = $this->extractVideoId($this->link);
 
-        if (!$videoId) {
+        if (! $videoId) {
             $this->notification()->error('Unable to extract video ID, please check the video URL');
+
             return;
         }
 
@@ -92,13 +96,14 @@ class CreateSummaryComponent extends Component
                 return $content;
             });
 
-            if(!is_string($content->summary) || trim($content->summary) === '') {
-                  ChunkTranscriptJob::dispatch($summary);
-            };
+            if (! is_string($content->summary) || trim($content->summary) === '') {
+                ChunkTranscriptJob::dispatch($summary);
+            }
 
             return $this->redirect(route('summary.show', $summary->id), navigate: true);
         } catch (Throwable $exception) {
             $this->notification()->error('Error', 'Something went wrong. This is most likely caused by disabled subtitles for this video.');
+
             return;
         }
     }

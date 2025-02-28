@@ -22,7 +22,7 @@ class AiPreferenceForm extends Form
 
         auth()->user()->preference()->update([
             'provider_id' => $this->provider,
-            'ai_model_id'=> $this->model,
+            'ai_model_id' => $this->model,
             'api_key_id' => $this->key,
         ]);
     }

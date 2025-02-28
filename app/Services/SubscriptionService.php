@@ -52,7 +52,7 @@ class SubscriptionService
         $intent = SubscriptionIntent::whereBelongsTo($user)->whereBelongsTo($plan)->first();
 
         $intent?->update([
-            'status' => 'fulfilled'
+            'status' => 'fulfilled',
         ]);
 
         $authorization = $this->getOrCreateAuthorization($request['data'], $user);

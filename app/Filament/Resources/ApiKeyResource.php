@@ -57,11 +57,11 @@ class ApiKeyResource extends Resource
 
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?ApiKey $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?ApiKey $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?ApiKey $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?ApiKey $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 
@@ -82,7 +82,7 @@ class ApiKeyResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('key')
-                    ->formatStateUsing(fn($state) => Crypt::encrypt($state))
+                    ->formatStateUsing(fn ($state) => Crypt::encrypt($state))
                     ->toggleable()
                     ->toggleable(),
 

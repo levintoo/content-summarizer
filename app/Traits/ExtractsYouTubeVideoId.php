@@ -2,7 +2,6 @@
 
 namespace App\Traits;
 
-
 trait ExtractsYouTubeVideoId
 {
     public function extractVideoId($url): mixed
@@ -11,7 +10,7 @@ trait ExtractsYouTubeVideoId
 
         parse_str($queryString, $queryParams);
 
-        if (!isset($queryParams['v']) || $queryParams['v'] == "") {
+        if (! isset($queryParams['v']) || $queryParams['v'] == '') {
             return null;
         }
 

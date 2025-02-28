@@ -22,3 +22,18 @@ Route::middleware([
     Route::get('/account', AccountComponent::class)->name('account');
     Route::get('/settings', SettingsComponent::class)->name('settings');
 });
+
+Route::get('/test', function () {
+    $openai = new \App\Services\OpenAIService;
+
+    $messages = [
+        ['role' => 'system', 'content' => 'You are a pirate from the 1800s'],
+        ['role' => 'user', 'content' => 'Can you provide five bedtime stories?'],
+    ];
+
+    $response = $openai->chat(key: env('OPENAI_API_KEY'), messages: $messages);
+
+    $data = $response->json();
+    info($data);
+    dd($data);
+});

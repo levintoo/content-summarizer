@@ -15,7 +15,9 @@ use WireUi\Traits\WireUiActions;
 class SettingsComponent extends Component
 {
     public ApiKeyForm $apiKeyForm;
+
     public AiPreferenceForm $aiPreferenceForm;
+
     public OtherPreferenceForm $otherPreferenceForm;
 
     use WireUiActions;
@@ -100,6 +102,7 @@ class SettingsComponent extends Component
         $preference = Preference::query()
             ->whereBelongsTo($user)
             ->firstOrCreate(['user_id' => $user->id]);
+
         return view('livewire.settings-component', compact('providers', 'models', 'apiKeys', 'preference'));
     }
 }
