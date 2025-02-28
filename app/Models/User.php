@@ -106,4 +106,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(ApiKey::class, 'user_id');
     }
+
+    public function preference(): HasOne
+    {
+        return $this->hasOne(Preference::class, 'user_id');
+    }
 }
