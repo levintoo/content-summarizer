@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    'paystack' => [
+        'api_key' => env('PAYSTACK_API_KEY'),
+        'api' => env('PAYSTACK_API')
+    ],
+
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'),
+        'redirect' => env('GOOGLE_REDIRECT_URI')
+    ],
+
+    'openai' => [
+        'api_key' => env('OPENAI_API_KEY'),
+    ],
 ];

@@ -12,11 +12,17 @@
 
         <div class="space-y-6">
             <x-select icon="sparkles" placeholder="OpenAI" label="Preferred Provider" shadow="none">
-                    <x-select.option value="" label="OpenAI" />
+                @forelse($providers as $provider)
+                    <x-select.option value="{{ $provider->id }}" label="{{ $provider->name }}" />
+                @empty
+                @endforelse
             </x-select>
 
             <x-select icon="key" placeholder="Gpt 4o" label="Preferred Model" shadow="none">
-                    <x-select.option value="" label="o3-mini" />
+                @forelse($models as $model)
+                    <x-select.option value="{{ $model->id }}" label="{{ $model->name }}" />
+                @empty
+                @endforelse
             </x-select>
 
             <div class="inline-flex gap-2">
@@ -62,11 +68,14 @@
 
             <x-modal-card title="Create Api Key" name="addApiKeyModal">
                 <div class="grid grid-cols-1 gap-4">
-                    <x-select id="api_key_provider" icon="sparkles" label="Provider" placeholder="OpenAI">
-                        <x-select.option value="" label="Anthropic" />
+                    <x-select id="api_key_provider" icon="sparkles" placeholder="OpenAI" label="Preferred Provider" shadow="none">
+                        @forelse($providers as $provider)
+                            <x-select.option value="{{ $provider->id }}" label="{{ $provider->name }}" />
+                        @empty
+                        @endforelse
                     </x-select>
 
-                    <x-input id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." />
+                    <x-password id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." />
                 </div>
 
                 <x-slot name="footer" class="flex justify-end gap-x-4">

@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -79,5 +80,24 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return in_array($this->role, [RoleEnum::ADMIN, RoleEnum::SUPERADMIN], true);
+    }
+
+    public function subscription(): HasOne
+    {
+        return $this->hasOne(Subscription::class, 'user_id')
+            ->latest()
+            ->whereDate('next_payment_date', '>=', now())
+            ->with('plan:id,name,plan_code,amount,interval,currency')
+            ->whereIn('status', ['active', 'non-renewing']);
+    }
+
+    public function getSubscription()
+    {
+        return $this->subscription()->first();
+    }
+
+    public function hasActiveSubscription(): bool
+    {
+        return $this->subscription()->exists();
     }
 }
