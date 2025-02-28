@@ -30,6 +30,8 @@ class PlanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Subscriptions';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -64,17 +66,57 @@ class PlanResource extends Resource
     {
         return $table
             ->columns([
+                TextColumn::make('id')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->searchable()
+                    ->sortable(),
+
                 TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('plan_code'),
+                TextColumn::make('subscriptions_count')
+                    ->label('All Subscriptions')
+                    ->counts('subscriptions')
+                    ->badge()
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->sortable(),
 
-                TextColumn::make('amount'),
+                TextColumn::make('active_subscriptions_count')
+                    ->label('Active Subscriptions')
+                    ->counts('active_subscriptions')
+                    ->badge()
+                    ->toggleable()
+                    ->sortable(),
 
-                TextColumn::make('interval'),
+                TextColumn::make('plan_code')
+                    ->toggleable(),
 
-                TextColumn::make('currency'),
+                TextColumn::make('amount')
+                    ->toggleable()
+                    ->sortable(),
+
+                TextColumn::make('interval')
+                    ->toggleable(),
+
+                TextColumn::make('currency')
+                    ->toggleable()
+                    ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->sortable(),
+                TextColumn::make('updated_at')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->sortable(),
+                TextColumn::make('deleted_at')
+                    ->toggleable()
+                    ->toggledHiddenByDefault()
+                    ->sortable(),
             ])
             ->filters([
                 TrashedFilter::make(),
