@@ -21,25 +21,10 @@
 
             <div class="inline-flex gap-2">
                 <x-button>Save</x-button>
-                <x-button flat x-on:click="$openModal('cardModal')">Manage API Keys</x-button>
+                <x-button flat x-on:click="$openModal('manageApiKeysModal')">Manage API Keys</x-button>
             </div>
 
-            <x-modal name="simpleModal" blur="base">
-                <x-card title="Consent Terms">
-                    <p>
-                        Lorem Ipsum is simply dummy text of the printing and typesetting industry.
-                    </p>
-
-                    <x-slot name="footer" class="flex justify-end gap-x-4">
-                        <x-button flat label="Cancel" x-on:click="close" />
-
-                        <x-button primary label="I Agree" wire:click="agree" />
-                    </x-slot>
-                </x-card>
-            </x-modal>
-
-
-            <x-modal-card title="Manage API Keys" name="cardModal" blur="base">
+            <x-modal-card title="Manage API Keys" name="manageApiKeysModal" blur="base">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="border border-slate-200 bg-white space-y-3 p-4 rounded-lg">
@@ -65,9 +50,27 @@
                 </div>
 
                 <x-slot name="footer" class="flex justify-between gap-x-4">
-                    <x-button label="Add New Key" x-on:click="$openModal('simpleModal')" flat />
+                    <x-button label="Add New Key" x-on:click="$openModal('addApiKeyModal')" flat />
 
                     <div class="inline-flex gap-x-4">
+                        <x-button flat label="Cancel" x-on:click="close" />
+
+                        <x-button primary label="Save" wire:click="save" />
+                    </div>
+                </x-slot>
+            </x-modal-card>
+
+            <x-modal-card title="Create Api Key" name="addApiKeyModal">
+                <div class="grid grid-cols-1 gap-4">
+                    <x-select id="api_key_provider" icon="sparkles" label="Provider" placeholder="OpenAI">
+                        <x-select.option value="" label="Anthropic" />
+                    </x-select>
+
+                    <x-input id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." />
+                </div>
+
+                <x-slot name="footer" class="flex justify-end gap-x-4">
+                    <div class="flex gap-x-4">
                         <x-button flat label="Cancel" x-on:click="close" />
 
                         <x-button primary label="Save" wire:click="save" />

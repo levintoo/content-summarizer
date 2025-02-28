@@ -113,9 +113,16 @@
                         </li>
 
                         <li>
-                            <x-nav-link wire:navigate href="{{ route('profile.show') }}" active="{{ request()->routeIs('profile.show') }}">
+                            <x-nav-link wire:navigate href="{{ route('account') }}" active="{{ request()->routeIs('account') }}">
                                 <x-hugeicons-credit-card-pos class="size-5.5"/>
                                 <span>Account & Billing</span>
+                            </x-nav-link>
+                        </li>
+
+                        <li>
+                            <x-nav-link wire:navigate href="{{ route('settings') }}" active="{{ request()->routeIs('settings') }}">
+                                <x-hugeicons-ai-setting class="size-5.5"/>
+                                <span>Settings</span>
                             </x-nav-link>
                         </li>
 

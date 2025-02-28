@@ -79,7 +79,7 @@
             </x-slot>
 
             <x-slot name="footer">
-                <x-button outline rose wire:click="$toggle('confirmingLogout')" wire:loading.attr="disabled">
+                <x-button flat wire:click="$toggle('confirmingLogout')" wire:loading.attr="disabled">
                     {{ __('Cancel') }}
                 </x-button>
 
