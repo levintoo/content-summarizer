@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\RoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -99,5 +100,10 @@ class User extends Authenticatable
     public function hasActiveSubscription(): bool
     {
         return $this->subscription()->exists();
+    }
+
+    public function apiKeys(): HasMany
+    {
+        return $this->hasMany(ApiKey::class, 'user_id');
     }
 }

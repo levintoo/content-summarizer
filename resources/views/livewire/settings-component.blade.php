@@ -33,26 +33,33 @@
             <x-modal-card title="Manage API Keys" name="manageApiKeysModal" blur="base">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="border border-slate-200 bg-white space-y-3 p-4 rounded-lg">
-                        <div class="flex items-center justify-between space-x-2 text-sm">
-                            <div class="">
-                                <span class="text-gray-700">Provider:</span> <span class="text-gray-500">Anthropic</span>
-                                <span
+                    @forelse($apiKeys as $apiKey)
+                        <div class="border border-slate-200 bg-white space-y-3 p-4 rounded-lg">
+                            <div class="flex items-center justify-between space-x-2 text-sm">
+                                <div class="">
+                                    <span class="text-gray-700">Provider:</span> <span class="text-gray-500">{{ $apiKey?->provider?->name }}</span>
+                                    <span
 
-                                    class="px-1.5 py-1 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50">Selected</span>
+                                        class="px-1.5 py-1 text-xs font-medium uppercase tracking-wider text-green-800 bg-green-200 rounded-lg bg-opacity-50">Selected</span>
+                                </div>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-gray-700">Name:</span> <span class="text-gray-500">{{ $apiKey->name }}</span>
+                            </div>
+                            <div class="text-sm">
+                                <span class="text-gray-700">Created:</span> <span class="text-gray-500">{{ $apiKey->created_at->diffForHumans() }}</span>
+                            </div>
+                            <div class="inline-flex gap-3 w-full">
+                                <x-mini-button wire:click="removeApiKey({{ $apiKey->id }})" title="Make this the default" class="border" size="sm" rose icon="trash" flat gray interaction="negative"/>
+                                <x-mini-button wire:click="chooseApiKey({{ $apiKey->id }})" title="Make this the default" class="border" size="sm" primary icon="check" flat gray interaction="primary"/>
                             </div>
                         </div>
-                        <div class="text-sm">
-                            <span class="text-gray-700">Name:</span> <span class="text-gray-500">Personal</span>
-                        </div>
-                        <div class="text-sm">
-                            <span class="text-gray-700">Created:</span> <span class="text-gray-500">5 mins Ago</span>
-                        </div>
-                        <div class="inline-flex gap-3 w-full">
-                            <x-mini-button title="Make this the default" class="border" size="sm" rose icon="trash" flat gray interaction="negative"/>
-                            <x-mini-button wire:click="save" title="Make this the default" class="border" size="sm" primary icon="check" flat gray interaction="primary"/>
-                        </div>
-                    </div>
+                    @empty
+                    @endforelse
+                </div>
+
+                <div class="mt-2">
+                    {{ $apiKeys->links() }}
                 </div>
 
                 <x-slot name="footer" class="flex justify-between gap-x-4">
@@ -68,21 +75,23 @@
 
             <x-modal-card title="Create Api Key" name="addApiKeyModal">
                 <div class="grid grid-cols-1 gap-4">
-                    <x-select id="api_key_provider" icon="sparkles" placeholder="OpenAI" label="Preferred Provider" shadow="none">
+                    <x-select wire:model="apiKeyForm.provider" id="api_key_provider" icon="sparkles" placeholder="OpenAI" label="Preferred Provider" shadow="none">
                         @forelse($providers as $provider)
                             <x-select.option value="{{ $provider->id }}" label="{{ $provider->name }}" />
                         @empty
                         @endforelse
                     </x-select>
 
-                    <x-password id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." />
+                    <x-password wire:model="apiKeyForm.key" id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." corner="Name this key for future reference—it's not viewable again." />
+
+                    <x-input wire:model="apiKeyForm.name" id="api_key_name" icon="information-circle" label="Name" placeholder="Personal Key" />
                 </div>
 
                 <x-slot name="footer" class="flex justify-end gap-x-4">
                     <div class="flex gap-x-4">
                         <x-button flat label="Cancel" x-on:click="close" />
 
-                        <x-button primary label="Save" wire:click="save" />
+                        <x-button primary label="Save" wire:click="saveApiKey" />
                     </div>
                 </x-slot>
             </x-modal-card>
