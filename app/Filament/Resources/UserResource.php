@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Enums\RoleEnum;
 use App\Filament\Resources\UserResource\Pages;
 use App\Models\User;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -39,6 +41,13 @@ class UserResource extends Resource
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $context) => $context === 'create'),
 
+                Select::make('role')
+                    ->options(RoleEnum::class)
+                    ->required()
+                    ->enum(RoleEnum::class)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->required(fn (string $context) => $context === 'create'),
+
                 TextInput::make('password')
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
@@ -59,8 +68,17 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name'),
-                TextColumn::make('email'),
+                TextColumn::make('name')->searchable(),
+                TextColumn::make('email')->searchable(),
+                TextColumn::make('role')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state?->name ?? '-')
+                    ->colors([
+                        'primary' => RoleEnum::USER,
+                        'success' => RoleEnum::ADMIN,
+                        'danger' => RoleEnum::SUPERADMIN,
+                    ]),
+                TextColumn::make('joined')->sortable()->toggleable()->toggledHiddenByDefault(),
             ])
             ->filters([
                 //
