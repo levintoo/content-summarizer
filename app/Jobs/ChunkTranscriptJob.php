@@ -33,7 +33,7 @@ class ChunkTranscriptJob implements ShouldQueue
         $reader->xml($transcriptXml);
 
         $transcriptChunk = '';
-        $chunkSize = 1000;
+        $chunkSize = $this->summary->user->preference->aiModel->context_window * 0.5;
 
         while ($reader->read()) {
             if ($reader->nodeType == XMLReader::ELEMENT && $reader->name == 'text') {
@@ -63,7 +63,7 @@ class ChunkTranscriptJob implements ShouldQueue
                         'chunk' => $transcriptChunk,
                     ]);
 
-                    SummarizeChunkJob::dispatch(chunk: $chunk);
+                    SummarizeChunkJob::dispatch(chunk: $chunk, summary: $this->summary);
 
                     $transcriptChunk = '';
                 }
@@ -76,7 +76,7 @@ class ChunkTranscriptJob implements ShouldQueue
                 'chunk' => $transcriptChunk,
             ]);
 
-            SummarizeChunkJob::dispatch(chunk: $chunk);
+            SummarizeChunkJob::dispatch(chunk: $chunk, summary: $this->summary);
         }
 
         CombineChunksJob::dispatch(summary: $this->summary);
