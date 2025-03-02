@@ -91,6 +91,7 @@
 
                 <div class="bg-gray-50/30 absolute right-3 bottom-3">
                     <button
+                        wire:loading.attr="disabled"
                         wire:ignore
                         type="submit"
                         class="cursor-pointer rounded-full p-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none"

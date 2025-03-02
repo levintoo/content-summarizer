@@ -10,8 +10,8 @@ use WireUi\Traits\WireUiActions;
 
 class AccountComponent extends Component
 {
-    use WithPagination;
     use WireUiActions;
+    use WithPagination;
 
     public $plans;
 

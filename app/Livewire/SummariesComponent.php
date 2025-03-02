@@ -10,8 +10,8 @@ use WireUi\Traits\WireUiActions;
 
 class SummariesComponent extends Component
 {
-    use WithPagination;
     use WireUiActions;
+    use WithPagination;
 
     public function deleteSummary($id): void
     {
@@ -29,6 +29,7 @@ class SummariesComponent extends Component
     public function render()
     {
         $summaries = Summary::query()->latest()->whereBelongsTo(auth()->user())->with('content:id,title,channel,video_id')->paginate();
+
         return view('livewire.summaries-component', compact('summaries'));
     }
 }

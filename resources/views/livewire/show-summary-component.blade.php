@@ -24,7 +24,7 @@
             </div>
 
             @if($content->summary)
-                <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`{!! addslashes($content->summary) !!}`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
+                <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`'{{ addslashes($content->summary) }}'`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
                     <div class="flex items-center gap-2.5">
                         <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
                         <div class="font-medium">{{ config('app.name') }}</div>
@@ -61,65 +61,88 @@
                 </div>
             @endif
 
-            <div class="hidden">
-                <div
-                    class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
-                    <p class="font-light">
-                        {{ fake()->realText() }}
-                    </p>
-                </div>
-
-                <div class="space-y-2.5">
-                    <div class="flex items-center gap-2.5">
-                        <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
-                        <div class="font-medium">{{ config('app.name') }}</div>
+            @if($this->summary?->questions?->isNotEmpty())
+                @forelse($questions as $question)
+                    <div
+                        class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
+                        <p class="font-light">
+                            {{ $question->question }}
+                        </p>
                     </div>
+                    @if($question->answer)
+                        <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`'{{ addslashes($question?->answer) }}'`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
+                            <div class="flex items-center gap-2.5">
+                                <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
+                                <div class="font-medium">{{ config('app.name') }}</div>
+                            </div>
 
-                    <div class="prose max-w-none rounded-lg font-light">
-                        {{ \Illuminate\Mail\Markdown::parse(fake()->realText() ?? '-') }}
-                    </div>
+                            <div class="prose max-w-none rounded-lg font-light">
+                                {{ \Illuminate\Mail\Markdown::parse($question?->answer) }}
+                            </div>
 
-                    <div>
-                        <x-mini-button size="sm" title="Copy" rounded flat gray interaction="primary">
-                            <x-hugeicons-copy-01 class="size-4.5" />
-                        </x-mini-button>
+                            <div>
+                                <x-mini-button @click="copyToClipboard" size="sm" title="Copy" rounded flat gray interaction="primary">
+                                    <x-hugeicons-copy-01 class="size-4.5" />
+                                </x-mini-button>
 
-                        <x-mini-button size="sm" title="Bad response" rounded flat gray interaction="primary">
-                            <x-hugeicons-thumbs-up class="size-4.5 text-blue-700" />
-                        </x-mini-button>
+                                <x-mini-button wire:click.debounce="likeAnswer({{ $question->id }})" size="sm" title="Bad response" rounded flat gray interaction="primary">
+                                    @if($question->feedback === 1)
+                                        <x-hugeicons-thumbs-up class="size-4.5 text-blue-500" />
+                                    @else
+                                        <x-hugeicons-thumbs-up class="size-4.5" />
+                                    @endif
+                                </x-mini-button>
 
-                        <x-mini-button size="sm" title="Good response" rounded flat gray interaction="primary">
-                            <x-hugeicons-thumbs-down class="size-4.5" />
-                        </x-mini-button>
-                    </div>
-                </div>
+                                <x-mini-button wire:click.debounce="dislikeAnswer({{ $question->id }})" size="sm" title="Good response" rounded flat gray interaction="primary">
+                                    @if($question->feedback === -1)
+                                    <x-hugeicons-thumbs-down class="size-4.5 text-blue-500" />
+                                    @else
+                                    <x-hugeicons-thumbs-down class="size-4.5" />
+                                    @endif
+                                </x-mini-button>
+                            </div>
+                        </div>
+                    @else
+                        <div class="space-y-2.5">
+                            <div class="flex items-center gap-2.5">
+                                <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
+                                <div class="font-medium">{{ config('app.name') }}</div>
+                            </div>
 
-                <div
-                    class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
-                    <p class="font-light">
-                        {{ fake()->realText() }}
-                    </p>
-                </div>
-
-                <div class="space-y-2.5">
-                    <div class="flex items-center gap-2.5">
-                        <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
-                        <div class="font-medium">{{ config('app.name') }}</div>
-                    </div>
-
-                    <div class="prose max-w-none rounded-lg font-light">
-                        crafting ...
-                    </div>
-                </div>
-            </div>
+                            <div class="prose max-w-none rounded-lg font-light">
+                                crafting ...
+                            </div>
+                        </div>
+                    @endif
+                @empty
+                @endforelse
+            @endif
 
             <div class="invisible" aria-hidden="true"></div>
         </div>
     </div>
 
+    <x-modal-card title="Customize Response" name="responseConfigurationModal" blur="sm">
+        <div class="grid grid-cols-1 gap-4">
+            <x-input type="text" wire:model.live.debounce="language" corner="Yeap, just key it in" id="language" rounded="lg" shadow="none" size="sm" label="Preferred language" icon="language" />
+
+            <label for="add-context" class="flex p-3 w-full bg-white border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
+                <input wire:model.live.debounce="context" type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" id="add-context">
+                <span class="text-sm text-gray-700 font-medium ms-3">Include video summary as added context</span>
+            </label>
+        </div>
+
+        <x-slot name="footer" class="flex justify-between gap-x-4">
+            <div class="flex gap-x-4">
+                <x-button flat label="Close" x-on:click="close"/>
+            </div>
+        </x-slot>
+    </x-modal-card>
+
     <div class="w-full mx-auto py-2 fixed bottom-0 right-1/2 translate-x-1/2 bg-white">
         <div class="px-3 lg:px-0 lg:w-[55%] lg:mx-auto">
             <form
+                wire:submit.debounce="ask"
                 x-data="{
         initialHeight: 40,
         currentHeight: 40,
@@ -138,6 +161,7 @@
                     x-ref="textarea"
                     @input="resize()"
                     @change="resize()"
+                    wire:model="userQuestion"
                     wire:keydown.enter.prevent="ask()"
                     class="max-h-[200px] min-h-[52px] bg-transparent w-full px-4 pt-4 text-gray-700 placeholder:text-gray-500/70 border-none resize-none focus:ring-0 focus:outline-none"
                     placeholder="Ask me anything ..."
@@ -148,64 +172,40 @@
                     <div class="bg-gray-50/30 absolute left-3 bottom-3 flex items-center gap-2">
                         <button
                             type="button"
-                            label="Open" x-on:click="$openModal('summaryConfigurationModal')"
+                            label="Open" x-on:click="$openModal('responseConfigurationModal')"
                             class="border cursor-pointer rounded-full p-2 bg-white focus:ring-4 focus:ring-blue-100 focus:outline-none"
                         >
                             <x-hugeicons-sliders-horizontal class="text-gray-500 size-4.5" stroke-width="2"/>
                         </button>
 
-                        @push('modals')
-                            <x-modal-card title="Customize Summary" name="summaryConfigurationModal" blur="sm">
-                                <div class="grid grid-cols-1 gap-4">
-                                    <x-select
-                                        label="Preferred Language"
-                                        placeholder="Select one"
-                                        :options="['English', 'Spanish', 'French']"
-                                    />
-
-                                    <label for="add-context" class="flex p-3 w-full bg-white border border-gray-300 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500">
-                                        <input type="checkbox" class="shrink-0 mt-0.5 border-gray-200 rounded text-blue-600 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" id="add-context" checked="">
-                                        <span class="text-sm text-gray-700 font-medium ms-3">Include video summary as added context</span>
-                                    </label>
-                                </div>
-
-                                <x-slot name="footer" class="flex justify-between gap-x-4">
-                                    <div class="flex gap-x-4">
-                                        <x-button flat label="Cancel" x-on:click="close"/>
-
-                                        <x-button primary label="Apply Settings" wire:click="save"/>
-                                    </div>
-                                </x-slot>
-                            </x-modal-card>
-                        @endpush
-
-                        <span
-                            class="hidden md:flex rounded-full items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-300 text-sky-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
-                        >
+                        @if($language)
+                            <span
+                                class="hidden md:flex rounded-full items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-300 text-sky-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
+                            >
                         <div class="w-4 h-4 flex items-center justify-center shrink-0">
-                            <x-hugeicons-language-circle stroke-width="2" class="size-4.5"/>
+                            <x-hugeicons-language-circle stroke-width="2" class="size-4.5" />
                         </div>
-                        <span class="text-sm text-sky-500">English (UK)</span>
+                        <span class="text-sm text-sky-500">{{ $language }}</span>
                     </span>
-                        <span
-                            class="hidden md:flex rounded-full items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-300 text-sky-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
-                        >
+                        @endif
+
+                        @if($context)
+                            <span
+                                class="hidden md:flex rounded-full items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-300 text-sky-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
+                            >
                         <div class="w-4 h-4 flex items-center justify-center shrink-0">
-                            <x-hugeicons-ai-book stroke-width="2" class="size-4.5"/>
+                            <x-hugeicons-ai-book stroke-width="2" class="size-4.5" />
                         </div>
-                        <span class="text-sm text-sky-500">Context</span>
+                        <span class="text-sm text-sky-500">Summary</span>
                     </span>
+                        @endif
                     </div>
 
                     <div class="bg-gray-50/30 absolute right-3 bottom-3">
                         <button
-                            type="button"
-                            class="hidden p-2 text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none rounded-lg text-center">
-                            <x-hugeicons-ai-chat-02 stroke-width="2" class="size-4"/>
-
-                        </button>
-
-                        <button
+                            wire:target="ask"
+                            wire:loading.attr="disabled"
+                            wire:ignore
                             type="submit"
                             class="cursor-pointer rounded-full p-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none"
                         >

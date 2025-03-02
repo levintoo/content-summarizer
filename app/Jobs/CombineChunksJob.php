@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Constants\CacheDuration;
+use App\Events\ContentSummarisedEvent;
 use App\Models\Summary;
 use App\Services\OpenAIService;
 use Cache;
@@ -39,15 +40,16 @@ class CombineChunksJob implements ShouldQueue
 
         $unsummarizedChunks = $content->chunks->whereNull('summary');
 
-        $cacheKey = $this->summary->id . 'combine-job-tries';
+        $cacheKey = $this->summary->id.'combine-job-tries';
 
         $tries = Cache::remember($cacheKey, CacheDuration::WEEK, function () use ($cacheKey) {
             return Cache::get($cacheKey) ?? 0;
         });
 
         if ($unsummarizedChunks->isNotEmpty()) {
-            if($tries < 10) {
+            if ($tries < 10) {
                 $this->release(10);
+
                 return;
             }
 
@@ -62,7 +64,7 @@ class CombineChunksJob implements ShouldQueue
         $messages = [
             [
                 'role' => 'system',
-                'content' => 'You are an expert video transcript summarizer.'
+                'content' => 'You are an expert video transcript summarizer.',
             ],
             [
                 'role' => 'user',
@@ -106,8 +108,8 @@ class CombineChunksJob implements ShouldQueue
 
 
                 The video is titled $title by $channel
-               Transcript: $transcript"
-            ]
+               Transcript: $transcript",
+            ],
         ];
 
         $response = $openAIService->chat(
@@ -122,6 +124,8 @@ class CombineChunksJob implements ShouldQueue
             'prompt_tokens' => $response['usage']['prompt_tokens'] ?? 0,
             'completion_tokens' => $response['usage']['completion_tokens'] ?? 0,
         ]);
+
+        ContentSummarisedEvent::dispatch($this->summary->id);
     }
 
     public function failed(Throwable $throwable): void

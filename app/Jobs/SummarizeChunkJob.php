@@ -20,9 +20,7 @@ class SummarizeChunkJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Chunk $chunk, public Summary $summary)
-    {
-    }
+    public function __construct(public Chunk $chunk, public Summary $summary) {}
 
     /**
      * Execute the job.
