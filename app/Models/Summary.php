@@ -17,6 +17,11 @@ class Summary extends Model
         'content_id',
         'provider_id',
         'ai_model_id',
+        'feedback',
+    ];
+
+    protected $casts = [
+      'feedback' => 'integer',
     ];
 
     public function user(): BelongsTo

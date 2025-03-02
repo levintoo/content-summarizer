@@ -17,7 +17,21 @@ class ShowSummaryComponent extends Component
         $this->summary = $summary;
         $this->content = $summary->content;
     }
-    
+
+    public function like(): void
+    {
+        $this->summary->update([
+            'feedback' => 1,
+        ]);
+    }
+
+    public function dislike(): void
+    {
+        $this->summary->update([
+            'feedback' => -1,
+        ]);
+    }
+
     public function render()
     {
         return view('livewire.show-summary-component');

@@ -24,7 +24,7 @@
             </div>
 
             @if($content->summary)
-                <div class="space-y-2.5">
+                <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`{!! addslashes($content->summary) !!}`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
                     <div class="flex items-center gap-2.5">
                         <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
                         <div class="font-medium">{{ config('app.name') }}</div>
@@ -35,71 +35,81 @@
                     </div>
 
                     <div>
+                        <x-mini-button @click="copyToClipboard" size="sm" title="Copy" rounded flat gray interaction="primary">
+                            <x-hugeicons-copy-01 class="size-4.5" />
+                        </x-mini-button>
+
+                        <x-mini-button wire:click.debounce="like" title="Good response" size="sm" rounded flat gray interaction="primary">
+                            <x-hugeicons-thumbs-up class="size-4.5 @if($this->summary->feedback === 1) text-blue-700 @endif" />
+                        </x-mini-button>
+
+                        <x-mini-button wire:click.debounce="dislike" title="Bad response" size="sm" rounded flat gray interaction="primary">
+                            <x-hugeicons-thumbs-down class="size-4.5 @if($this->summary->feedback === -1) text-blue-700 @endif" />
+                        </x-mini-button>
+                    </div>
+                </div>
+            @else
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
+                        <div class="font-medium">{{ config('app.name') }}</div>
+                    </div>
+
+                    <div class="prose max-w-none rounded-lg font-light">
+                        crafting ...
+                    </div>
+                </div>
+            @endif
+
+            <div class="hidden">
+                <div
+                    class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
+                    <p class="font-light">
+                        {{ fake()->realText() }}
+                    </p>
+                </div>
+
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
+                        <div class="font-medium">{{ config('app.name') }}</div>
+                    </div>
+
+                    <div class="prose max-w-none rounded-lg font-light">
+                        {{ \Illuminate\Mail\Markdown::parse(fake()->realText() ?? '-') }}
+                    </div>
+
+                    <div>
                         <x-mini-button size="sm" title="Copy" rounded flat gray interaction="primary">
                             <x-hugeicons-copy-01 class="size-4.5" />
                         </x-mini-button>
 
-                        <x-mini-button title="Good response" size="sm" rounded flat gray interaction="primary">
+                        <x-mini-button size="sm" title="Bad response" rounded flat gray interaction="primary">
                             <x-hugeicons-thumbs-up class="size-4.5 text-blue-700" />
                         </x-mini-button>
 
-                        <x-mini-button title="Bad response" size="sm" rounded flat gray interaction="primary">
+                        <x-mini-button size="sm" title="Good response" rounded flat gray interaction="primary">
                             <x-hugeicons-thumbs-down class="size-4.5" />
                         </x-mini-button>
                     </div>
                 </div>
 
-            @else
-
-            @endif
-
-            <div
-                class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
-                <p class="font-light">
-                    {{ fake()->realText() }}
-                </p>
-            </div>
-
-            <div class="space-y-2.5">
-                <div class="flex items-center gap-2.5">
-                    <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
-                    <div class="font-medium">{{ config('app.name') }}</div>
+                <div
+                    class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
+                    <p class="font-light">
+                        {{ fake()->realText() }}
+                    </p>
                 </div>
 
-                <div class="prose max-w-none rounded-lg font-light">
-                    {{ \Illuminate\Mail\Markdown::parse(fake()->realText() ?? '-') }}
-                </div>
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
+                        <div class="font-medium">{{ config('app.name') }}</div>
+                    </div>
 
-                <div>
-                    <x-mini-button size="sm" title="Copy" rounded flat gray interaction="primary">
-                        <x-hugeicons-copy-01 class="size-4.5" />
-                    </x-mini-button>
-
-                    <x-mini-button size="sm" title="Bad response" rounded flat gray interaction="primary">
-                        <x-hugeicons-thumbs-up class="size-4.5 text-blue-700" />
-                    </x-mini-button>
-
-                    <x-mini-button size="sm" title="Good response" rounded flat gray interaction="primary">
-                        <x-hugeicons-thumbs-down class="size-4.5" />
-                    </x-mini-button>
-                </div>
-            </div>
-
-            <div
-                class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">
-                <p class="font-light">
-                    {{ fake()->realText() }}
-                </p>
-            </div>
-
-            <div class="space-y-2.5">
-                <div class="flex items-center gap-2.5">
-                    <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
-                    <div class="font-medium">{{ config('app.name') }}</div>
-                </div>
-
-                <div class="prose max-w-none rounded-lg font-light">
-                    crafting ...
+                    <div class="prose max-w-none rounded-lg font-light">
+                        crafting ...
+                    </div>
                 </div>
             </div>
 
