@@ -14,6 +14,8 @@ use Illuminate\Support\Str;
 use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\RegisterResponse;
 use Laravel\Fortify\Contracts\TwoFactorLoginResponse;
+use Laravel\Fortify\Contracts\VerifyEmailResponse;
+use Laravel\Fortify\Features;
 use Laravel\Fortify\Fortify;
 
 class FortifyServiceProvider extends ServiceProvider
@@ -40,6 +42,14 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         $this->app->instance(RegisterResponse::class, new class implements RegisterResponse
+        {
+            public function toResponse($request)
+            {
+                return redirect()->intended(route('summary.create'));
+            }
+        });
+
+        $this->app->instance(VerifyEmailResponse::class, new class implements RegisterResponse
         {
             public function toResponse($request)
             {
