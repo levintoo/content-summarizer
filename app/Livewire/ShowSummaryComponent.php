@@ -102,6 +102,21 @@ class ShowSummaryComponent extends Component
         $preference = $user->preference;
         $content = $this->summary->content;
 
+        $validationChecks = [
+            [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
+            [$preference?->provider_id, 'Please select a valid provider in settings'],
+            [$preference?->ai_model_id, 'Please select a valid AI model in settings'],
+            [$preference?->api_key_id, 'Please add an API key in settings'],
+        ];
+
+        foreach ($validationChecks as [$condition, $message]) {
+            if (! $condition) {
+                $this->notification()->error($message);
+
+                return;
+            }
+        }
+
         $question = $summary->questions()->create([
             'user_id' => $user->id,
             'question' => $this->userQuestion,
