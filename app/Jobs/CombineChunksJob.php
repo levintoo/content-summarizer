@@ -130,6 +130,13 @@ class CombineChunksJob implements ShouldQueue
 
     public function failed(Throwable $throwable): void
     {
+        $this->summary->update([
+            'answer' => 'Something went wrong.',
+            'failed' => true,
+        ]);
+
+        ContentSummarisedEvent::dispatch($this->summary->id);
+
         Log::error($throwable->getMessage());
     }
 }

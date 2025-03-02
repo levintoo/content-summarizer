@@ -19,10 +19,12 @@ class Summary extends Model
         'provider_id',
         'ai_model_id',
         'feedback',
+        'failed',
     ];
 
     protected $casts = [
         'feedback' => 'integer',
+        'failed' => 'boolean',
     ];
 
     public function user(): BelongsTo

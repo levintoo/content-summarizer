@@ -86,7 +86,11 @@ class SummaryResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('feedback')
+                    ->badge()
                     ->sortable(),
+
+                TextColumn::make('failed')
+                    ->badge(),
             ])
             ->filters([
                 TrashedFilter::make(),

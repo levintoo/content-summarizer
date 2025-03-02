@@ -82,11 +82,15 @@ class ShowSummaryComponent extends Component
 
     public function ask(): void
     {
+        if(!$this->content->summary) {
+            $this->notification()->error('Please wait for the summary first.');
+            return;
+        }
+
         try {
             $this->validate();
         } catch (Exception $e) {
             $this->notification()->error($e->getMessage());
-
             return;
         }
 
