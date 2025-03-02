@@ -6,10 +6,12 @@ use App\Models\Plan;
 use App\Services\PaystackService;
 use Livewire\Component;
 use Livewire\WithPagination;
+use WireUi\Traits\WireUiActions;
 
 class AccountComponent extends Component
 {
     use WithPagination;
+    use WireUiActions;
 
     public $plans;
 
@@ -34,6 +36,8 @@ class AccountComponent extends Component
         abort_unless(auth()->user()->hasActiveSubscription(), 403);
 
         $paystack->cancelSubscription(auth()->user()->subscription()->first());
+
+        $this->modal()->close('manageModal');
     }
 
     public function render()
