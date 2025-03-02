@@ -42,10 +42,6 @@
                                 @empty
                                 @endforelse
                             </x-select>
-
-                            <div class="col-span-1">
-                                <x-textarea maxlength="2550" wire:model.live.debounce="context" id="use_prompt" label="Additional Instructions" placeholder="Add any specific guidelines or focus points" />
-                            </div>
                         </div>
 
                         <x-slot name="footer" class="flex justify-between gap-x-4">
@@ -74,17 +70,6 @@
                             <x-hugeicons-language-circle stroke-width="2" class="size-4.5" />
                         </div>
                         <span class="text-sm text-sky-500">{{ $language }}</span>
-                    </span>
-                    @endif
-
-                    @if($context)
-                        <span
-                            class="hidden md:flex rounded-full items-center gap-2 px-1.5 py-1 border h-8 cursor-pointer bg-sky-500/15 hover:bg-sky-500/20 border-sky-300 text-sky-500 focus:ring-4 focus:ring-blue-100 focus:outline-none"
-                        >
-                        <div class="w-4 h-4 flex items-center justify-center shrink-0">
-                            <x-hugeicons-ai-book stroke-width="2" class="size-4.5" />
-                        </div>
-                        <span class="text-sm text-sky-500">Context</span>
                     </span>
                     @endif
                 </div>

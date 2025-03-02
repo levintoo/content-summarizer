@@ -23,15 +23,15 @@
                 </p>
             </div>
 
-            @if($content->summary)
-                <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`'{{ addslashes($content->summary) }}'`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
+            @if($content->summary || $summary->failed)
+                <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`'{{ addslashes($content->summary ? $content->summary : 'Something went wrong') }}'`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
                     <div class="flex items-center gap-2.5">
                         <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
                         <div class="font-medium">{{ config('app.name') }}</div>
                     </div>
 
                     <div class="prose max-w-none rounded-lg font-light">
-                        {{ \Illuminate\Mail\Markdown::parse($content->summary) }}
+                        {{ \Illuminate\Mail\Markdown::parse($content->summary ? $content->summary : 'Something went wrong') }}
                     </div>
 
                     <div>

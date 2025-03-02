@@ -24,9 +24,6 @@ class CreateSummaryComponent extends Component
     #[Validate(['required', 'max:255'])]
     public string $link = 'https://www.youtube.com/watch?v=be_oxleM07U';
 
-    #[Validate(['nullable', 'max:2550'])]
-    public string $context = '';
-
     #[Validate(['nullable', 'max:255'])]
     public string $language = '';
 
@@ -94,7 +91,12 @@ class CreateSummaryComponent extends Component
                 ]);
             });
 
-            ChunkTranscriptJob::dispatch($summary);
+            $userInput = [
+                'language' => $this->language ?? '',
+                'summary_length' => (string) $this->summary_length->name ?? '',
+            ];
+
+            ChunkTranscriptJob::dispatch($summary, $userInput);
 
             return $this->redirect(route('summary.show', $summary->id), navigate: true);
         } catch (Throwable $exception) {

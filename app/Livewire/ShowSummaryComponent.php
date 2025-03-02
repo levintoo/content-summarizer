@@ -30,6 +30,7 @@ class ShowSummaryComponent extends Component
 
     public function mount(Summary $summary): void
     {
+        abort_unless($summary->user_id === auth()->id(), 404);
         $this->summary = $summary;
         $this->content = $summary->content;
     }

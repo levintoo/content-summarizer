@@ -32,6 +32,8 @@ class AskQuestionJob implements ShouldQueue
         $title = $this->content->title;
         $channel = $this->content->channel;
 
+        $language = $this->userInput['language'] ? : $this->preference->language;
+
         $messages = [
             [
                 'role' => 'system',
@@ -52,7 +54,7 @@ class AskQuestionJob implements ShouldQueue
                     . " User Question: {$this->userInput['userQuestion']}"
                     . ($this->userInput['context'] ? " Video Title: {$title}" : '')
                     . ($this->userInput['context'] ? " Channel Name: {$channel}" : '')
-                    . (!empty($this->userInput['language']) ? " Preferred Language: {{$this->userInput['language']}}" : '')
+                    . (!empty($language) ? " Preferred Language: {{$language}}" : '')
                     . ($this->userInput['context'] ? " Video Summary: {{$this->content->summary}}" : '')
             ],
         ];

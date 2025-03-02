@@ -23,7 +23,7 @@ class CombineChunksJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(public Summary $summary)
+    public function __construct(public Summary $summary, public array $userInput)
     {
         //
     }
@@ -61,14 +61,22 @@ class CombineChunksJob implements ShouldQueue
         $title = $content->title;
         $channel = $content->channel;
 
+        $language = $this->userInput['language'] ?: $preference->language;
+        $summary_length = $this->userInput['summary_length'] ?: $preference->summary_length;
+
         $messages = [
             [
                 'role' => 'system',
-                'content' => 'You are an expert video transcript summarizer.',
+                'content' => 'You are an expert video transcript summarizer.'   ."- Apply user preferences when specified:"
+                    . ($language ? "- Preferred language: [" . $language . "]\n" : '')
+                    . ($summary_length ? "- Preferred summary length: [" . $summary_length . "]\n" : ''),
             ],
             [
                 'role' => 'user',
-                'content' => "
+                'content' => $preference?->use_custom_prompt
+                    ? $preference->custom_prompt . 'The video is titled $title by '.$channel.'
+               Transcript: '.$transcript
+                    : "
         Summarize the following YouTube video transcript in a structured format with bulleted sections and nested bullet points for content.
 
         You will highlight key points from the video.
@@ -106,9 +114,9 @@ class CombineChunksJob implements ShouldQueue
            - Avoid using title tags (e.g., h1-h5); only use <p> tags for intros and conclusions.
            - Maintain a concise and efficient format, minimizing bullet points while retaining all relevant information.
 
-
                 The video is titled $title by $channel
-               Transcript: $transcript",
+               Transcript: $transcript"
+                ,
             ],
         ];
 
@@ -131,7 +139,6 @@ class CombineChunksJob implements ShouldQueue
     public function failed(Throwable $throwable): void
     {
         $this->summary->update([
-            'answer' => 'Something went wrong.',
             'failed' => true,
         ]);
 

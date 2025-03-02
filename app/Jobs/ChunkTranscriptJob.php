@@ -19,7 +19,7 @@ class ChunkTranscriptJob implements ShouldQueue
 {
     use Batchable, Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function __construct(public Summary $summary) {}
+    public function __construct(public Summary $summary, public array $userInput) {}
 
     public function handle(): void
     {
@@ -79,7 +79,7 @@ class ChunkTranscriptJob implements ShouldQueue
             SummarizeChunkJob::dispatch(chunk: $chunk, summary: $this->summary);
         }
 
-        CombineChunksJob::dispatch(summary: $this->summary);
+        CombineChunksJob::dispatch(summary: $this->summary, userInput: $this->userInput);
     }
 
     public function failed(Throwable $throwable): void
