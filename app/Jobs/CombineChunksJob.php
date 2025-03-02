@@ -64,19 +64,10 @@ class CombineChunksJob implements ShouldQueue
         $language = $this->userInput['language'] ?: $preference->language;
         $summary_length = $this->userInput['summary_length'] ?: $preference->summary_length;
 
-        $messages = [
-            [
-                'role' => 'system',
-                'content' => 'You are an expert video transcript summarizer.'   ."- Apply user preferences when specified:"
-                    . ($language ? "- Preferred language: [" . $language . "]\n" : '')
-                    . ($summary_length ? "- Preferred summary length: [" . $summary_length . "]\n" : ''),
-            ],
-            [
-                'role' => 'user',
-                'content' => $preference?->use_custom_prompt
-                    ? $preference->custom_prompt . 'The video is titled $title by '.$channel.'
-               Transcript: '.$transcript
-                    : "
+        $userPrompt = $preference?->use_custom_prompt
+            ? $preference->custom_prompt . 'The video is titled $title by ' . $channel . '
+               Transcript: ' . $transcript
+            : "
         Summarize the following YouTube video transcript in a structured format with bulleted sections and nested bullet points for content.
 
         You will highlight key points from the video.
@@ -115,15 +106,37 @@ class CombineChunksJob implements ShouldQueue
            - Maintain a concise and efficient format, minimizing bullet points while retaining all relevant information.
 
                 The video is titled $title by $channel
-               Transcript: $transcript"
-                ,
+               Transcript: $transcript";
+
+        $systemPrompt = 'You are an expert video transcript summarizer.' . '- Apply user preferences when specified:'
+            . ($language ? '- Preferred language: [' . $language . "]\n" : '')
+            . ($summary_length ? '- Preferred summary length: [' . $summary_length . "]\n" : '');
+
+        $model = $preference->aiModel->name;
+
+        $messages = match ($model) {
+            'gpt-4o-mini' => [
+                [
+                    'role' => 'system',
+                    'content' => $systemPrompt,
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $userPrompt,
+                ],
             ],
-        ];
+            default => [
+                [
+                    'role' => 'user',
+                    'content' => $systemPrompt.' '.$userPrompt
+                ],
+            ],
+        };
 
         $response = $openAIService->chat(
             key: $preference->apiKey->key,
             messages: $messages,
-            model: $preference->aiModel->name
+            model: $model,
         );
 
         $content->update([

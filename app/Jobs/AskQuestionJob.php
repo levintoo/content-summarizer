@@ -23,21 +23,16 @@ class AskQuestionJob implements ShouldQueue
         private readonly Question $question,
         private readonly Preference $preference,
         private readonly Content $content,
-        private readonly array $userInput)
-    {
-    }
+        private readonly array $userInput) {}
 
     public function handle(OpenAIService $openAIService): void
     {
         $title = $this->content->title;
         $channel = $this->content->channel;
 
-        $language = $this->userInput['language'] ? : $this->preference->language;
+        $language = $this->userInput['language'] ?: $this->preference->language;
 
-        $messages = [
-            [
-                'role' => 'system',
-                'content' => 'You are an AI assistant helping users understand YouTube video content.
+        $systemPrompt = 'You are an AI assistant helping users understand YouTube video content.
         Follow these steps before answering any question:
         1. **Identify the key subject of the question** (e.g., a person, place, event, or concept).
         2. **Check if you need additional details** (e.g., if the question asks about a person’s age, determine their identity first).
@@ -45,24 +40,40 @@ class AskQuestionJob implements ShouldQueue
         4. **Use reasoning to deduce missing details** (e.g., if asked about a singer’s age, first find their name, then check when they were born, and calculate their current age).
         5. **Provide a clear and confident answer** based on the gathered information. Never stop at "information not provided"; instead, attempt to deduce an answer logically before stating that information is unavailable.
         If key details are completely missing, suggest the best way to find them.
-        Never reveal your sources to the video summary.'
+        Never reveal your sources to the video summary.';
+
+        $userPrompt = 'Always keep responses clear, concise, and relevant while maintaining the preferred language.'
+            ." User Question: {$this->userInput['userQuestion']}"
+            .($this->userInput['context'] ? " Video Title: {$title}" : '')
+            .($this->userInput['context'] ? " Channel Name: {$channel}" : '')
+            .(! empty($language) ? " Preferred Language: {{$language}}" : '')
+            .($this->userInput['context'] ? " Video Summary: {{$this->content->summary}}" : '');
+
+        $model = $this->preference->aiModel->name;
+
+        $messages = match ($model) {
+            'gpt-4o-mini' => [
+                [
+                    'role' => 'system',
+                    'content' => $systemPrompt,
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $userPrompt,
+                ],
             ],
-            [
-                'role' => 'user',
-                'content' =>
-                    "Always keep responses clear, concise, and relevant while maintaining the preferred language."
-                    . " User Question: {$this->userInput['userQuestion']}"
-                    . ($this->userInput['context'] ? " Video Title: {$title}" : '')
-                    . ($this->userInput['context'] ? " Channel Name: {$channel}" : '')
-                    . (!empty($language) ? " Preferred Language: {{$language}}" : '')
-                    . ($this->userInput['context'] ? " Video Summary: {{$this->content->summary}}" : '')
+            default => [
+                [
+                    'role' => 'user',
+                    'content' => $systemPrompt.' '.$userPrompt
+                ],
             ],
-        ];
+        };
 
         $response = $openAIService->chat(
             key: $this->preference->apiKey->key,
             messages: $messages,
-            model: $this->preference->aiModel->name
+            model: $model
         );
 
         $this->question->update([
@@ -78,8 +89,8 @@ class AskQuestionJob implements ShouldQueue
     public function failed(Throwable $throwable): void
     {
         $this->question->update([
-           'answer' => 'Something went wrong.',
-           'failed' => true,
+            'answer' => 'Something went wrong.',
+            'failed' => true,
         ]);
 
         event(new QuestionAnsweredEvent($this->question->summary->id, $this->question->user_id));

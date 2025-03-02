@@ -13,6 +13,7 @@ class QuestionAnsweredEvent implements ShouldBroadcast
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public string $summaryId;
+
     public string $userId;
 
     public function __construct($summaryId, $userId)
@@ -24,7 +25,7 @@ class QuestionAnsweredEvent implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel("summary.{$this->summaryId}.user.{$this->userId}")
+            new PrivateChannel("summary.{$this->summaryId}.user.{$this->userId}"),
         ];
     }
 }

@@ -71,20 +71,21 @@ class ShowSummaryComponent extends Component
     {
         abort_unless($question->user_id === auth()->id(), 404);
 
-        $question->update(['feedback' => 1,]);
+        $question->update(['feedback' => 1]);
     }
 
     public function dislikeAnswer(Question $question): void
     {
         abort_unless($question->user_id === auth()->id(), 404);
 
-        $question->update(['feedback' => -1,]);
+        $question->update(['feedback' => -1]);
     }
 
     public function ask(): void
     {
-        if(!$this->content->summary) {
+        if (! $this->content->summary) {
             $this->notification()->error('Please wait for the summary first.');
+
             return;
         }
 
@@ -92,6 +93,7 @@ class ShowSummaryComponent extends Component
             $this->validate();
         } catch (Exception $e) {
             $this->notification()->error($e->getMessage());
+
             return;
         }
 

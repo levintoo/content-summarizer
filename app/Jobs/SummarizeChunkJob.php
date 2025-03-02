@@ -35,14 +35,9 @@ class SummarizeChunkJob implements ShouldQueue
         $title = $content->title;
         $channel = $content->channel;
 
-        $messages = [
-            [
-                'role' => 'system',
-                'content' => 'You are an expert video transcript summarizer.',
-            ],
-            [
-                'role' => 'user',
-                'content' => "
+        $systemPrompt = 'You are an expert video transcript summarizer.';
+
+        $userPrompt = "
                 Summarize the following part of a YouTube video transcript.
                         You will highlight key points from the video.
                                 Refer to the speakers by their names or pronouns whenever possible.
@@ -52,14 +47,33 @@ class SummarizeChunkJob implements ShouldQueue
         Avoid using title tags (e.g., h1-h5).
 
         The video is titled {$title} by {$channel}.
-        Transcript part: {$this->chunk->chunk}",
+        Transcript part: {$this->chunk->chunk}";
+
+        $model = $preference->aiModel->name;
+
+        $messages = match ($model) {
+            'gpt-4o-mini' => [
+                [
+                    'role' => 'system',
+                    'content' => $systemPrompt,
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $userPrompt,
+                ],
             ],
-        ];
+            default => [
+                [
+                    'role' => 'user',
+                    'content' => $systemPrompt.' '.$userPrompt
+                ],
+            ],
+        };
 
         $response = $openAIService->chat(
             key: $preference->apiKey->key,
             messages: $messages,
-            model: $preference->aiModel->name
+            model: $model,
         );
 
         $this->chunk->update([
