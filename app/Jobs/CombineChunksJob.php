@@ -2,8 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Constants\CacheDuration;
 use App\Models\Summary;
 use App\Services\OpenAIService;
+use Cache;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,6 +13,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CombineChunksJob implements ShouldQueue
 {
@@ -36,9 +39,19 @@ class CombineChunksJob implements ShouldQueue
 
         $unsummarizedChunks = $content->chunks->whereNull('summary');
 
+        $cacheKey = $this->summary->id . 'combine-job-tries';
+
+        $tries = Cache::remember($cacheKey, CacheDuration::WEEK, function () use ($cacheKey) {
+            return Cache::get($cacheKey) ?? 0;
+        });
+
         if ($unsummarizedChunks->isNotEmpty()) {
-            $this->release(10);
-            return;
+            if($tries < 10) {
+                $this->release(10);
+                return;
+            }
+
+            Cache::set($cacheKey, $tries + 1, CacheDuration::WEEK);
         }
 
         $transcript = $content->chunks->pluck('summary')->join(' ');
@@ -111,7 +124,7 @@ class CombineChunksJob implements ShouldQueue
         ]);
     }
 
-    public function failed(\Throwable $throwable): void
+    public function failed(Throwable $throwable): void
     {
         Log::error($throwable->getMessage());
     }
