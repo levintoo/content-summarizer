@@ -5,52 +5,53 @@
 
         <div class="space-y-4 md:space-y-8">
             <div class="overflow-hidden max-h-[217.017px] max-w-[385.8px] sm:w-1/2 hover:opacity-80 transition-all rounded-lg shadow-lg hover:shadow-xl">
-                <a target="_blank" rel="noopener nofollow" href="https://www.youtube.com/watch?v=8Ee4QjCEHHc">
+                <a target="_blank" rel="noopener nofollow" href="https://www.youtube.com/watch?v={{ $content->video_id }}">
                     <img class="object-cover w-full transition-all"
                          width="385.8"
                          height="217.017"
-                         src="https://i.ytimg.com/vi/8Ee4QjCEHHc/maxresdefault.jpg" alt="no image">
+                         src="https://i.ytimg.com/vi/{{ $content->video_id }}/maxresdefault.jpg" alt="no image">
                 </a>
             </div>
 
             <div class="w-fit space-y-2">
                 <p class="font-medium text-gray-800">
-                    Calvin Harris - Slide (Official Audio) ft. Frank Ocean, Migos
+                    {{ $content->title }}
                 </p>
 
                 <p class="text-gray-700">
-                    Calvin Harris
+                    {{ $content->channel }}
                 </p>
             </div>
 
+            @if($content->summary)
+                <div class="space-y-2.5">
+                    <div class="flex items-center gap-2.5">
+                        <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
+                        <div class="font-medium">{{ config('app.name') }}</div>
+                    </div>
 
-            <div class="space-y-2.5">
-                <div class="flex items-center gap-2.5">
-                    <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
-                    <div class="font-medium">{{ config('app.name') }}</div>
+                    <div class="prose max-w-none rounded-lg font-light">
+                        {{ \Illuminate\Mail\Markdown::parse($content->summary) }}
+                    </div>
+
+                    <div>
+                        <x-mini-button size="sm" title="Copy" rounded flat gray interaction="primary">
+                            <x-hugeicons-copy-01 class="size-4.5" />
+                        </x-mini-button>
+
+                        <x-mini-button title="Good response" size="sm" rounded flat gray interaction="primary">
+                            <x-hugeicons-thumbs-up class="size-4.5 text-blue-700" />
+                        </x-mini-button>
+
+                        <x-mini-button title="Bad response" size="sm" rounded flat gray interaction="primary">
+                            <x-hugeicons-thumbs-down class="size-4.5" />
+                        </x-mini-button>
+                    </div>
                 </div>
 
-                <div class="prose max-w-none rounded-lg font-light">
-                    {{ \Illuminate\Mail\Markdown::parse('* '.fake()->realText() ?? '-') }}
-                    {{ \Illuminate\Mail\Markdown::parse('* '.fake()->realText() ?? '-') }}
-                    {{ \Illuminate\Mail\Markdown::parse('* '.fake()->realText() ?? '-') }}
-                    {{ \Illuminate\Mail\Markdown::parse('* '.fake()->realText() ?? '-') }}
-                </div>
+            @else
 
-                <div>
-                    <x-mini-button size="sm" title="Copy" rounded flat gray interaction="primary">
-                        <x-hugeicons-copy-01 class="size-4.5" />
-                    </x-mini-button>
-
-                    <x-mini-button title="Good response" size="sm" rounded flat gray interaction="primary">
-                        <x-hugeicons-thumbs-up class="size-4.5 text-blue-700" />
-                    </x-mini-button>
-
-                    <x-mini-button title="Bad response" size="sm" rounded flat gray interaction="primary">
-                        <x-hugeicons-thumbs-down class="size-4.5" />
-                    </x-mini-button>
-                </div>
-            </div>
+            @endif
 
             <div
                 class="mt-2.5 prose max-w-none px-3 py-2 rounded-lg bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 dark:bg-blue-800 text-white">

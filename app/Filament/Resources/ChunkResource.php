@@ -33,6 +33,8 @@ class ChunkResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Summary';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -71,9 +73,9 @@ class ChunkResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                TextColumn::make('chunk'),
+                TextColumn::make('chunk')->toggleable()->toggledHiddenByDefault(),
 
-                TextColumn::make('summary'),
+                TextColumn::make('summary')->toggleable()->toggledHiddenByDefault(),
 
                 TextColumn::make('merged'),
 

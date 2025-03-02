@@ -49,13 +49,13 @@ class CreateSummaryComponent extends Component
         }
 
         $user = auth()->user();
-        $preference = $user->preference;
+        $preference = $user?->preference;
 
         $validationChecks = [
             [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
-            [$preference->provider_id, 'Please select a valid provider in settings'],
-            [$preference->ai_model_id, 'Please select a valid AI model in settings'],
-            [$preference->api_key_id, 'Please add an API key in settings'],
+            [$preference?->provider_id, 'Please select a valid provider in settings'],
+            [$preference?->ai_model_id, 'Please select a valid AI model in settings'],
+            [$preference?->api_key_id, 'Please add an API key in settings'],
         ];
 
         foreach ($validationChecks as [$condition, $message]) {
@@ -79,26 +79,22 @@ class CreateSummaryComponent extends Component
 
             $videoInfo = $youtubeService->getVideoInfo(videoId: $videoId);
 
-            $content = DB::transaction(function () use ($videoInfo, $videoId, &$summary) {
-                $content = Content::updateOrCreate(['video_id' => $videoId], [
+            $summary = DB::transaction(function () use ($videoInfo, $videoId, &$summary) {
+                $content = Content::create([
                     'title' => $videoInfo ? $videoInfo['title'] : 'Youtube',
                     'channel' => $videoInfo ? $videoInfo['channel'] : 'Youtube',
                     'video_id' => $videoId,
                 ]);
 
-                $summary = Summary::create([
+                return Summary::create([
                     'user_id' => auth()->id(),
                     'content_id' => $content->id,
                     'provider_id' => auth()->user()->preference->provider_id,
                     'ai_model_id' => auth()->user()->preference->ai_model_id,
                 ]);
-
-                return $content;
             });
 
-            if (! is_string($content->summary) || trim($content->summary) === '') {
-                ChunkTranscriptJob::dispatch($summary);
-            }
+            ChunkTranscriptJob::dispatch($summary);
 
             return $this->redirect(route('summary.show', $summary->id), navigate: true);
         } catch (Throwable $exception) {

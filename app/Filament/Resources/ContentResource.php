@@ -32,6 +32,8 @@ class ContentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Summary';
+
     public static function form(Form $form): Form
     {
         return $form
@@ -73,7 +75,7 @@ class ContentResource extends Resource
 
                 TextColumn::make('video_id'),
 
-                TextColumn::make('summary'),
+                TextColumn::make('summary')->toggleable()->toggledHiddenByDefault(),
 
                 TextColumn::make('aiModel.name')
                     ->searchable()

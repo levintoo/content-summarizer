@@ -42,6 +42,8 @@
 
                     <x-dropdown.header label="{{ auth()->user()->name }}">
                         <x-dropdown.item wire:navigate href="{{ route('profile.show') }}" label="Manage Profile" icon="user" />
+                        <x-dropdown.item wire:navigate href="{{ route('settings') }}" label="Settings" icon="cog-6-tooth" />
+                        <x-dropdown.item wire:navigate href="{{ route('account') }}" label="Account & Billing" icon="credit-card" />
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}" x-data>
                             @csrf
@@ -130,11 +132,11 @@
                             Recent Summaries
                         </p>
 
-                        @foreach([1,2,3,4,5] as $i)
+                        @foreach(\App\Models\Summary::query()->whereBelongsTo(auth()->user())->latest()->limit(5)->select(['id', 'content_id'])->with(['content:id,title'])->get() as $summary)
                             <li>
-                                <x-nav-link wire:navigate href="{{ route('summary.show', fake()->uuid()) }}" active="{{ route('summary.show', fake()->uuid()) == request()->url() }}">
+                                <x-nav-link wire:navigate href="{{ route('summary.show', $summary->id) }}" active="{{ route('summary.show', $summary->id) === request()->url() }}">
                                     <div class="shrink-0 text-transparent bg-blue-600 size-[6px] rounded-full">.</div>
-                                    <span class="line-clamp-1">{{ fake()->realText() }}</span>
+                                    <span class="line-clamp-1">{{ $summary->content->title }}</span>
                                 </x-nav-link>
                             </li>
                         @endforeach
