@@ -16,10 +16,13 @@
         <form wire:submit="submit" class="relative border rounded-xl border-gray-200 focus:border-blue-500 bg-gray-50/50">
             <input
                 wire:model="link"
+                type="text"
                 autofocus
                 class="bg-transparent w-full min-h-[52px] max-h-[200px] rounded-xl px-4 pt-4 mb-4.5 text-gray-700 placeholder:text-gray-700/70 border-0 resize-none focus:ring-0 focus:outline-none leading-[1.2]"
                 placeholder="https://www.youtube.com/watch?v=dQw4w9WgXcQ"
-                id="ai-input"
+                id="videoLink"
+                name="videoLink"
+                autocomplete="none"
             />
 
             <div class="min-h-12">

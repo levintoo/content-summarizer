@@ -65,8 +65,8 @@ class CombineChunksJob implements ShouldQueue
         $summary_length = $this->userInput['summary_length'] ?: $preference->summary_length;
 
         $userPrompt = $preference?->use_custom_prompt
-            ? $preference->custom_prompt . 'The video is titled $title by ' . $channel . '
-               Transcript: ' . $transcript
+            ? $preference->custom_prompt.'The video is titled $title by '.$channel.'
+               Transcript: '.$transcript
             : "
         Summarize the following YouTube video transcript in a structured format with bulleted sections and nested bullet points for content.
 
@@ -108,9 +108,9 @@ class CombineChunksJob implements ShouldQueue
                 The video is titled $title by $channel
                Transcript: $transcript";
 
-        $systemPrompt = 'You are an expert video transcript summarizer.' . '- Apply user preferences when specified:'
-            . ($language ? '- Preferred language: [' . $language . "]\n" : '')
-            . ($summary_length ? '- Preferred summary length: [' . $summary_length . "]\n" : '');
+        $systemPrompt = 'You are an expert video transcript summarizer.'.'- Apply user preferences when specified:'
+            .($language ? '- Preferred language: ['.$language."]\n" : '')
+            .($summary_length ? '- Preferred summary length: ['.$summary_length."]\n" : '');
 
         $model = $preference->aiModel->name;
 
@@ -128,7 +128,7 @@ class CombineChunksJob implements ShouldQueue
             default => [
                 [
                     'role' => 'user',
-                    'content' => $systemPrompt.' '.$userPrompt
+                    'content' => $systemPrompt.' '.$userPrompt,
                 ],
             ],
         };

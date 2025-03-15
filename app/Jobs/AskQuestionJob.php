@@ -65,7 +65,7 @@ class AskQuestionJob implements ShouldQueue
             default => [
                 [
                     'role' => 'user',
-                    'content' => $systemPrompt.' '.$userPrompt
+                    'content' => $systemPrompt.' '.$userPrompt,
                 ],
             ],
         };

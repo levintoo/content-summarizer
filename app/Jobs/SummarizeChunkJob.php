@@ -65,7 +65,7 @@ class SummarizeChunkJob implements ShouldQueue
             default => [
                 [
                     'role' => 'user',
-                    'content' => $systemPrompt.' '.$userPrompt
+                    'content' => $systemPrompt.' '.$userPrompt,
                 ],
             ],
         };
