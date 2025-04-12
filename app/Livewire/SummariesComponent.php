@@ -18,7 +18,7 @@ class SummariesComponent extends Component
         $summary = Summary::query()->whereBelongsTo(auth()->user())->findOrFail($id);
 
         DB::transaction(function () use ($summary) {
-            $summary->content->chunks()->delete();
+            $summary->content->chunks->each->delete();
             $summary->content->delete();
             $summary->delete();
         });

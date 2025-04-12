@@ -1,5 +1,9 @@
-<x-app-layout>
+@push('seometa')
+    <!-- Primary Meta Tags -->
+    <title>Manage Profile - {{ config('app.name') }}</title>
+@endpush
 
+<x-app-layout>
     <div class="flex flex-col justify-between min-h-[calc(100vh-60px)]">
         <div class="px-3 lg:px-0 lg:w-[55%] lg:mx-auto">
             @if (Laravel\Fortify\Features::canUpdateProfileInformation())

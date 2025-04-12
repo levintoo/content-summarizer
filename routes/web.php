@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleOAuthController;
 use App\Livewire\AccountComponent;
 use App\Livewire\CreateSummaryComponent;
 use App\Livewire\PreferencesComponent;
@@ -9,7 +10,8 @@ use App\Livewire\ShowSummaryComponent;
 use App\Livewire\SummariesComponent;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', WelcomeComponent::class);
+// Route::get('/', WelcomeComponent::class);
+Route::get('/', fn() => redirect()->route('login'));
 Route::view('/old', 'old-welcome');
 Route::view('/welcome', 'welcome');
 Route::view('/test', 'test');
@@ -26,3 +28,5 @@ Route::middleware([
     Route::get('/account', AccountComponent::class)->name('account');
     Route::get('/settings', SettingsComponent::class)->name('settings');
 });
+
+Route::get('/auth/google/callback', GoogleOAuthController::class);

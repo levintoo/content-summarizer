@@ -17,7 +17,6 @@
 
         <!-- Styles -->
         @livewireStyles
-
         @stack('styles')
     </head>
     <body>
@@ -25,8 +24,9 @@
             {{ $slot }}
         </div>
 
+        <!-- Scripts -->
+        @stack('scripts')
         @wireUiScripts
-
         @livewireScripts
     </body>
 </html>

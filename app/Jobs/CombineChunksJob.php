@@ -60,6 +60,7 @@ class CombineChunksJob implements ShouldQueue
 
         $title = $content->title;
         $channel = $content->channel;
+        $videId = $content->video_id;
 
         $language = $this->userInput['language'] ?: $preference->language;
         $summary_length = $this->userInput['summary_length'] ?: $preference->summary_length;
@@ -133,11 +134,13 @@ class CombineChunksJob implements ShouldQueue
             ],
         };
 
-        $response = $openAIService->chat(
-            key: $preference->apiKey->key,
-            messages: $messages,
-            model: $model,
-        );
+        $response = Cache::rememberForever('combine-'.$videId, function () use ($model, $messages, $preference, $openAIService) {
+            return $openAIService->chat(
+                key: $preference->apiKey->key,
+                messages: $messages,
+                model: $model,
+            );
+        });
 
         $content->update([
             'summary' => $response['choices'][0]['message']['content'],

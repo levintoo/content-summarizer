@@ -1,3 +1,8 @@
+@push('seometa')
+    <!-- Primary Meta Tags -->
+    <title>Settings & Preferences - {{ config('app.name') }}</title>
+@endpush
+
 <div class="flex flex-col justify-between pb-4 min-h-[calc(100vh-60px)]">
     <div class="px-3 lg:px-0 lg:w-[55%] lg:mx-auto space-y-6 md:space-y-8">
 

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class SummarizeChunkJob implements ShouldQueue
@@ -34,6 +35,7 @@ class SummarizeChunkJob implements ShouldQueue
 
         $title = $content->title;
         $channel = $content->channel;
+        $videId = $content->video_id;
 
         $systemPrompt = 'You are an expert video transcript summarizer.';
 
@@ -70,11 +72,13 @@ class SummarizeChunkJob implements ShouldQueue
             ],
         };
 
-        $response = $openAIService->chat(
-            key: $preference->apiKey->key,
-            messages: $messages,
-            model: $model,
-        );
+        $response = Cache::rememberForever('chunk-'.$videId, function () use ($model, $messages, $preference, $openAIService) {
+            return $openAIService->chat(
+                key: $preference->apiKey->key,
+                messages: $messages,
+                model: $model,
+            );
+        });
 
         $this->chunk->update([
             'summary' => $response['choices'][0]['message']['content'],

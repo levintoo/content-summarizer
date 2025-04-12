@@ -1,3 +1,8 @@
+@push('seometa')
+    <!-- Primary Meta Tags -->
+    <title>Account & Billing - {{ config('app.name') }}</title>
+@endpush
+
 <div class="flex flex-col justify-between pb-4 min-h-[calc(100vh-60px)]">
     <div class="space-y-8 py-4 px-3 lg:px-0 lg:w-[55%] lg:mx-auto">
         <h1 class="font-semibold text-xl text-gray-800 leading-tight">

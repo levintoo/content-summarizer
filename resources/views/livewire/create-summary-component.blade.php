@@ -1,3 +1,8 @@
+@push('seometa')
+    <!-- Primary Meta Tags -->
+    <title>Create Summary - {{ config('app.name') }}</title>
+@endpush
+
 <div class="flex flex-col justify-between min-h-[calc(100vh-60px)]">
     <div class="px-3 lg:px-0 lg:w-[55%] lg:mx-auto flex-1 flex flex-col justify-center -mt-[60px]">
         <div class="mb-4 justify-center flex items-center gap-3">

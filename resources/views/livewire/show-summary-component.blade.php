@@ -1,3 +1,8 @@
+@push('seometa')
+    <!-- Primary Meta Tags -->
+    <title>{{ $content->title }} - {{ config('app.name') }}</title>
+@endpush
+
 <div x-data="{ footerHeight: 140 }" class="flex flex-col justify-between"
      :style="'min-height: calc(100vh - 60px - ' + footerHeight + 'px)'">
     <div class="px-3 lg:px-0 lg:w-[55%] lg:mx-auto"
