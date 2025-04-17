@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('use_custom_prompt')->nullable();
             $table->text('custom_prompt')->nullable();
             $table->string('language')->nullable();
-            $table->string('summary_length')->nullable();
+            $table->integer('summary_length')->default(\App\Enums\SummaryLengthEnum::balanced);
             $table->timestamps();
             $table->softDeletes();
         });

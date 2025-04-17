@@ -11,6 +11,7 @@ use App\Traits\ExtractsYouTubeVideoId;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\View\View;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Throwable;
@@ -22,21 +23,19 @@ class CreateSummaryComponent extends Component
     use WireUiActions;
 
     #[Validate(['required', 'max:255'])]
-//    public string $link = 'https://www.youtube.com/watch?v=be_oxleM07U'; // povillas
-//    public string $link = 'https://www.youtube.com/watch?v=qoieLCBPnGo'; // redriven
-//    public string $link = 'https://www.youtube.com/watch?v=pL5NCUuOkTM'; // practical engineering
-//    public string $link = 'https://www.youtube.com/watch?v=CGyEd0aKWZE'; // burn
-    public string $link = 'https://www.youtube.com/watch?v=jUW7EZ8z99U'; // swahili - transplant support
+    public string $link = '';
 
     #[Validate(['nullable', 'max:255'])]
     public string $language = '';
 
     #[Validate(['nullable', new enum(SummaryLengthEnum::class)])]
-    public SummaryLengthEnum $summary_length;
+    public string $summary_length;
 
-    public function mount()
+    public function mount(): void
     {
-        $this->summary_length = SummaryLengthEnum::balanced;
+        $preferences = auth()->user()->preference;
+        $this->summary_length = $preferences?->summary_length?->value ?? (string) SummaryLengthEnum::balanced->value;
+        $this->language = $preferences->language ?? '';
     }
 
     public function submit(YoutubeService $youtubeService)
@@ -53,7 +52,7 @@ class CreateSummaryComponent extends Component
         $preference = $user?->preference;
 
         $validationChecks = [
-//            [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
+            [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
             [$preference?->provider_id, 'Please select a valid provider in settings'],
             [$preference?->ai_model_id, 'Please select a valid AI model in settings'],
             [$preference?->api_key_id, 'Please add an API key in settings'],
@@ -97,20 +96,21 @@ class CreateSummaryComponent extends Component
 
             $userInput = [
                 'language' => $this->language ?? '',
-                'summary_length' => (string) $this->summary_length->name ?? '',
+                'summary_length' => (string) $this->summary_length ?? '',
             ];
 
             ChunkTranscriptJob::dispatch($summary, $userInput);
 
             return $this->redirect(route('summary.show', $summary->id), navigate: true);
         } catch (Throwable $exception) {
+            dd($exception);
             $this->notification()->error('Error', 'Something went wrong. This is most likely caused by disabled subtitles for this video.');
 
             return;
         }
     }
 
-    public function render()
+    public function render(): View
     {
         return view('livewire.create-summary-component');
     }

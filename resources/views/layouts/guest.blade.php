@@ -19,10 +19,8 @@
         @livewireStyles
         @stack('styles')
     </head>
-    <body>
-        <div class="font-sans text-gray-900 antialiased">
-            {{ $slot }}
-        </div>
+    <body class="font-sans text-gray-600 antialiased">
+        {{ $slot }}
 
         <!-- Scripts -->
         @stack('scripts')

@@ -43,7 +43,6 @@
                     <x-modal-card title="Customize Summary" name="summaryConfigurationModal" blur="sm">
                         <div class="grid grid-cols-1 gap-4">
                             <x-input type="text" wire:model.live.debounce="language" corner="Yeap, just key it in" id="language" rounded="lg" shadow="none" size="sm" label="Preferred language" icon="language" />
-
                             <x-select wire:model.live.debounce="summary_length" rounded="lg" shadow="none" searchable label="Preferred summary length" name="summary_length" icon="bars-3-center-left">
                                 @forelse(\App\Enums\SummaryLengthEnum::cases() as $enum)
                                     <x-select.option label="{{ ucfirst($enum->name) }}" value="{{ $enum->value }}" />
@@ -66,7 +65,7 @@
                         <div class="w-4 h-4 flex items-center justify-center shrink-0">
                             <x-hugeicons-google-doc stroke-width="2" class="size-4.5" />
                         </div>
-                        <span class="text-sm text-sky-500">{{ ucfirst($summary_length->name) }}</span>
+                        <span class="text-sm text-sky-500">{{ ucfirst(\App\Enums\SummaryLengthEnum::from($summary_length)->name) }}</span>
                     </span>
                     @endif
 

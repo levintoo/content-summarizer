@@ -19,7 +19,7 @@ class OtherPreferenceForm extends Form
     public $language = '';
 
     #[Validate(['nullable', new enum(SummaryLengthEnum::class)])]
-    public $summary_length = '';
+    public string $summary_length;
 
     public function store(): void
     {

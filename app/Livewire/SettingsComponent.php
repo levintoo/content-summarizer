@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Enums\SummaryLengthEnum;
 use App\Livewire\Forms\AiPreferenceForm;
 use App\Livewire\Forms\ApiKeyForm;
 use App\Livewire\Forms\OtherPreferenceForm;
@@ -51,7 +52,7 @@ class SettingsComponent extends Component
             'use_custom_prompt' => (bool) $preference->use_custom_prompt,
             'custom_prompt' => (string) $preference->custom_prompt,
             'language' => (string) $preference->language,
-            'summary_length' => (string) $preference?->summary_length?->value,
+            'summary_length' => $preference?->summary_length?->value ?? (string) SummaryLengthEnum::balanced->value,
         ]);
     }
 
@@ -64,8 +65,14 @@ class SettingsComponent extends Component
 
     public function removeApiKey(string $id): void
     {
-        ApiKey::whereBelongsTo(auth()->user())->findOrFail($id)->delete();
-
+        $user = auth()->user();
+        $apikey = ApiKey::whereBelongsTo($user)->findOrFail($id);
+        if ($user->preference->api_key_id) {
+            $user->preference()->update([
+                'api_key_id' => null,
+            ]);
+        }
+        $apikey->delete();
         $this->notification()->success('Key removed successfully');
     }
 

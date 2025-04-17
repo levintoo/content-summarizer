@@ -41,9 +41,9 @@ class ChunkTranscriptJob implements ShouldQueue
                 $startInSeconds = (float) $reader->getAttribute('start');
                 $decodedText = htmlspecialchars_decode($reader->readString());
 
-                $hours = floor($startInSeconds / 3600);
-                $minutes = floor(($startInSeconds % 3600) / 60);
-                $seconds = floor($startInSeconds % 60);
+                $hours = floor((int) $startInSeconds / 3600);
+                $minutes = floor(((int) $startInSeconds % 3600) / 60);
+                $seconds = floor((int) $startInSeconds % 60);
 
                 if ($hours > 0) {
                     $formattedStart = sprintf('%d:%02d:%02d', $hours, $minutes, $seconds);

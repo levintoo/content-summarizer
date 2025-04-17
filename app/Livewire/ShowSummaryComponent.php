@@ -7,6 +7,7 @@ use App\Models\Content;
 use App\Models\Question;
 use App\Models\Summary;
 use Exception;
+use Illuminate\View\View;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use WireUi\Traits\WireUiActions;
@@ -33,6 +34,7 @@ class ShowSummaryComponent extends Component
         abort_unless($summary->user_id === auth()->id(), 404);
         $this->summary = $summary;
         $this->content = $summary->content;
+        $this->language = auth()->user()->preference->language;
     }
 
     public function getListeners(): array
@@ -48,7 +50,7 @@ class ShowSummaryComponent extends Component
         $this->content = $this->summary->content;
     }
 
-    public function questionAnswered()
+    public function questionAnswered(): void
     {
         $this->content = $this->summary->content;
     }
@@ -103,7 +105,7 @@ class ShowSummaryComponent extends Component
         $content = $this->summary->content;
 
         $validationChecks = [
-//            [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
+            [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
             [$preference?->provider_id, 'Please select a valid provider in settings'],
             [$preference?->ai_model_id, 'Please select a valid AI model in settings'],
             [$preference?->api_key_id, 'Please add an API key in settings'],
@@ -133,7 +135,7 @@ class ShowSummaryComponent extends Component
         $this->reset('userQuestion');
     }
 
-    public function render()
+    public function render(): View
     {
         $questions = $this->summary->questions()->simplePaginate(100);
 

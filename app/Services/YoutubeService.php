@@ -26,11 +26,13 @@ class YoutubeService
 
         @$doc->loadHTML($content);
 
+        $xpath = new \DOMXPath($doc);
+
+        $nodes = $xpath->query('//span[@itemtype="https://schema.org/ListItem"]//meta[@itemprop="name"]');
+
+        $channel = $nodes->item(0)->getAttribute('content');
+
         $title = $doc->getElementsByTagName('title')->item(0)->textContent;
-
-        $channelInfo = $doc->getElementsByTagName('script')->item(19)->textContent;
-
-        $channel = json_decode($channelInfo)?->itemListElement[0]?->item?->name;
 
         $info = $title || $channel ? ['title' => explode(' - YouTube', $title)[0], 'channel' => $channel ?? 'Youtube'] : null;
 

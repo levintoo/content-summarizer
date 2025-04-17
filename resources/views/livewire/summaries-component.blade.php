@@ -24,16 +24,20 @@
                         </div>
                         <div class="space-y-1.5">
                             <div title="{{ $summary->content->title }}" class="text-base font-medium">
-                                <a class="line-clamp-1" wire:navigate href="{{ route('summary.show', $summary->id) }}">
+                                <a class="line-clamp-1 hover:underline" wire:navigate href="{{ route('summary.show', $summary->id) }}">
                                     {{ $summary->content->title }}
                                 </a>
                             </div>
                             <div class="text-sm text-slate-600">
                                 {{ $summary->content->channel }}
                             </div>
-                            @if(fake()->numberBetween(0,1) === 1)
-                                <x-badge flat class="!px-1.5 !py-0.5 text-sm/5 sm:text-xs/5">shared</x-badge>
-                            @endif
+                            <div class="mt-8">
+                                @if($summary->shared)
+                                <x-mini-badge title="Sharing" flat info icon="eye" />
+                                @else
+                                <x-mini-badge title="Not shared" flat secondary icon="eye-slash" />
+                                @endif
+                            </div>
                         </div>
                     </div>
                     <div class="flex items-center gap-4">
@@ -41,8 +45,10 @@
                             <x-slot name="trigger">
                                 <x-mini-button slate size="sm" class="border-none" rounded="full" outline icon="ellipsis-vertical" />
                             </x-slot>
-
-                            <x-dropdown.item wire:navigate href="/" label="Share Publicly" icon="share" />
+                            @if(!$summary->shared)
+                            <x-dropdown.item type="button" wire:click.debounce="shareSummary('{{ $summary->id }}')" label="Share Publicly" icon="share" />
+                            @else
+                            <x-dropdown.item type="button" wire:click.debounce="unShareSummary('{{ $summary->id }}')" label="Quit Sharing" icon="eye-slash" />
                             <x-dropdown.item
                                 as="button"
                                 label="Copy Link"
@@ -59,6 +65,7 @@
                                 }}"
                                 @click="copyLink()"
                             />
+                            @endif
                             <x-dropdown.item type="button" wire:click="deleteSummary('{{ $summary->id }}')" label="Delete" icon="trash" />
                         </x-dropdown>
                     </div>
