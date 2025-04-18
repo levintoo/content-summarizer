@@ -10,10 +10,12 @@
 
         <div class="space-y-4 md:space-y-8">
             <div class="overflow-hidden max-h-[217.017px] max-w-[385.8px] sm:w-1/2 hover:opacity-80 transition-all rounded-lg shadow-lg hover:shadow-xl">
-                <img class="object-cover w-full transition-all"
-                     width="385.8"
-                     height="217.017"
-                     src="https://i.ytimg.com/vi/{{ $content->video_id }}/maxresdefault.jpg" alt="no image">
+                <a target="_blank" rel="noopener nofollow" href="https://www.youtube.com/watch?v={{ $content->video_id }}">
+                    <img class="object-cover w-full transition-all"
+                         width="385.8"
+                         height="217.017"
+                         src="https://i.ytimg.com/vi/{{ $content->video_id }}/maxresdefault.jpg" alt="no image">
+                </a>
             </div>
 
             <div class="w-fit space-y-2">
