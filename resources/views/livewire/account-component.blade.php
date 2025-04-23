@@ -91,25 +91,17 @@
 
                         <p class="mt-2">For hobby, staging sites, and side hustles. </p>
                         <div class="space-y-1.5 mt-3">
-                            <p class="flex items-center gap-1 text-gray-700">
+                            <p class="flex items-center gap-1 text-gray-600">
                                 <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                2 pages
+                                Unlimited Summaries
                             </p>
-                            <p class="flex items-center gap-1 text-gray-700">
+                            <p class="flex items-center gap-1 text-gray-600">
                                 <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                Limited traffic
+                                Unlimited Questions
                             </p>
-                            <p class="flex items-center gap-1 text-gray-700">
+                            <p class="flex items-center gap-1 text-gray-600">
                                 <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                50 form submissions
-                            </p>
-                            <p class="flex items-center gap-1 text-gray-700">
-                                <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                1,000 visitors/mo
+                                24/7 Human Support
                             </p>
                         </div>
 
@@ -137,23 +129,15 @@
                         <div class="space-y-1.5 mt-3">
                             <p class="flex items-center gap-1 text-gray-400">
                                 <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                2 pages
+                                Unlimited Summaries
                             </p>
                             <p class="flex items-center gap-1 text-gray-400">
                                 <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                Limited traffic
+                                Unlimited Questions
                             </p>
                             <p class="flex items-center gap-1 text-gray-400">
                                 <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                50 form submissions
-                            </p>
-                            <p class="flex items-center gap-1 text-gray-400">
-                                <x-hugeicons-checkmark-badge-01 class="size-4.5 text-green-400" />
-
-                                1,000 visitors/mo
+                                24/7 Human Support
                             </p>
                         </div>
 
