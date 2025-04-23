@@ -34,7 +34,7 @@ class ShowSummaryComponent extends Component
         abort_unless($summary->user_id === auth()->id(), 404);
         $this->summary = $summary;
         $this->content = $summary->content;
-        $this->language = auth()->user()->preference->language;
+        $this->language = auth()->user()->preference?->language ?? '';
     }
 
     public function getListeners(): array
