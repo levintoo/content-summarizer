@@ -52,7 +52,7 @@ class CreateSummaryComponent extends Component
         $preference = $user?->preference;
 
         $validationChecks = [
-            [$user->hasActiveSubscription(), 'You do not have an active subscription yet'],
+            [$user->hasActiveSubscription() || $user->isOnTrial(), 'You do not have an active subscription yet'],
             [$preference?->provider_id, 'Please select a valid provider in settings'],
             [$preference?->ai_model_id, 'Please select a valid AI model in settings'],
             [$preference?->api_key_id, 'Please add an API key in settings'],

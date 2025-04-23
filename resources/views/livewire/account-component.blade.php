@@ -12,7 +12,17 @@
         <div rounded="lg" class="space-y-6">
             <div class="space-y-1">
                 <h3 class="text-gray-700 font-medium">
-                    Your Current Plan is <span class="underline">{{ auth()->user()->hasActiveSubscription() ? auth()->user()->getSubscription()->plan->name : '-' }}</span>
+                    @php
+                        $user = auth()->user();
+                        if ($user->hasActiveSubscription()) {
+                            $plan = $user->getSubscription()->plan->name;
+                        } elseif ($user->isOnTrial()) {
+                            $plan = 'trial';
+                        } else {
+                            $plan = '-';
+                        }
+                    @endphp
+                    Your Current Plan is <span class="underline">{{ $plan }}</span>
                 </h3>
                 <p class="text-gray-600">
                     A simple start for everyone
@@ -30,7 +40,20 @@
 
             <div class="space-y-1">
                 <h3 class="text-gray-700 font-medium" title="-">
-                    Active until <span class="underline">{{ auth()->user()->hasActiveSubscription() ? auth()->user()->getSubscription()->next_payment_date : '-' }}</span>
+                    @php
+                        $user = auth()->user();
+
+                        if ($user->hasActiveSubscription()) {
+                            $activeUntil = $user->getSubscription()->next_payment_date;
+                        } elseif ($user->isOnTrial()) {
+                            $trialEnd = $user->created_at->addDays(7);
+                            $activeUntil = now()->lessThanOrEqualTo($trialEnd) ? $trialEnd->toDateString() : '-';
+                        } else {
+                            $activeUntil = '-';
+                        }
+                    @endphp
+
+                    Active until <span class="underline">{{ $activeUntil }}</span>
                 </h3>
                 <p class="text-gray-600">
                     We may send you a notification upon Subscription expiration

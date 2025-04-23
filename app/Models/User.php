@@ -92,6 +92,11 @@ class User extends Authenticatable
             ->whereIn('status', ['active', 'non-renewing']);
     }
 
+    public function isOnTrial()
+    {
+        return $this->created_at->greaterThanOrEqualTo(now()->subDays(7));
+    }
+
     public function getSubscription()
     {
         return $this->subscription()->first();
