@@ -54,14 +54,26 @@
                     </div>
                 </div>
             @else
-                <div class="space-y-2.5">
+                {{-- Polling is a fallback in case the broadcast is missed, and it keeps the progress current. --}}
+                <div class="space-y-2.5" wire:poll.5s>
                     <div class="flex items-center gap-2.5">
                         <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
                         <div class="font-medium">{{ config('app.name') }}</div>
                     </div>
 
-                    <div class="prose max-w-none rounded-lg font-light">
-                        crafting ...
+                    <div class="space-y-2 rounded-lg font-light text-gray-700">
+                        @if($progress['total'] === 0)
+                            <p>Fetching the transcript...</p>
+                        @elseif($progress['done'] < $progress['total'])
+                            <p>Summarizing part {{ min($progress['done'] + 1, $progress['total']) }} of {{ $progress['total'] }}...</p>
+                        @else
+                            <p>Putting the final summary together...</p>
+                        @endif
+
+                        <div class="h-1.5 w-full max-w-sm overflow-hidden rounded-full bg-gray-200">
+                            <div class="h-full rounded-full bg-blue-500 transition-all duration-500"
+                                 style="width: {{ $progress['total'] ? max(5, (int) round($progress['done'] / $progress['total'] * 90)) : 5 }}%"></div>
+                        </div>
                     </div>
                 </div>
             @endif

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\GoogleOAuthController;
 use App\Livewire\AccountComponent;
 use App\Livewire\CreateSummaryComponent;
+use App\Livewire\Public\SharedSummaryComponent;
 use App\Livewire\Public\WelcomeComponent;
 use App\Livewire\SettingsComponent;
 use App\Livewire\ShowSummaryComponent;
@@ -10,6 +11,8 @@ use App\Livewire\SummariesComponent;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeComponent::class);
+
+Route::get('/shared/{summary}', SharedSummaryComponent::class)->name('summary.shared');
 
 Route::middleware([
     'auth:sanctum',

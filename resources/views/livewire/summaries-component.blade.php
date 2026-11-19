@@ -54,7 +54,7 @@
                                 label="Copy Link"
                                 icon="clipboard-document"
                                 x-data="{ copyLink() {
-                                    navigator.clipboard.writeText('{{ route('summary.show', $summary->id) }}')
+                                    navigator.clipboard.writeText('{{ route('summary.shared', $summary->id) }}')
                                     .then(() => {
                                         $wireui.notify({
                                             icon: 'success',

@@ -31,7 +31,7 @@ class ShowSummaryComponent extends Component
 
     public function mount(Summary $summary): void
     {
-        abort_unless($summary->user_id === auth()->id(), 404);
+        $this->authorize('view', $summary);
         $this->summary = $summary;
         $this->content = $summary->content;
         $this->language = auth()->user()->preference?->language ?? '';
@@ -57,6 +57,8 @@ class ShowSummaryComponent extends Component
 
     public function like(): void
     {
+        $this->authorize('update', $this->summary);
+
         $this->summary->update([
             'feedback' => 1,
         ]);
@@ -64,6 +66,8 @@ class ShowSummaryComponent extends Component
 
     public function dislike(): void
     {
+        $this->authorize('update', $this->summary);
+
         $this->summary->update([
             'feedback' => -1,
         ]);
@@ -71,20 +75,22 @@ class ShowSummaryComponent extends Component
 
     public function likeAnswer(Question $question): void
     {
-        abort_unless($question->user_id === auth()->id(), 404);
+        $this->authorize('update', $question);
 
         $question->update(['feedback' => 1]);
     }
 
     public function dislikeAnswer(Question $question): void
     {
-        abort_unless($question->user_id === auth()->id(), 404);
+        $this->authorize('update', $question);
 
         $question->update(['feedback' => -1]);
     }
 
     public function ask(): void
     {
+        $this->authorize('update', $this->summary);
+
         if (! $this->content->summary) {
             $this->notification()->error('Please wait for the summary first.');
 
@@ -139,6 +145,15 @@ class ShowSummaryComponent extends Component
     {
         $questions = $this->summary->questions()->simplePaginate(100);
 
-        return view('livewire.show-summary-component', compact('questions'));
+        $progress = ['done' => 0, 'total' => 0];
+
+        if (! $this->content->summary && ! $this->summary->failed) {
+            $progress = [
+                'done' => $this->content->chunks()->whereNotNull('summary')->count(),
+                'total' => $this->content->chunks()->count(),
+            ];
+        }
+
+        return view('livewire.show-summary-component', compact('questions', 'progress'));
     }
 }

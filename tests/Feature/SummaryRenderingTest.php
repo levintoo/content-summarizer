@@ -29,3 +29,13 @@ test('users cannot view another users summary', function () {
         ->get(route('summary.show', $summary))
         ->assertNotFound();
 });
+
+test('a summary in progress shows its progress', function () {
+    $user = User::factory()->create();
+    $content = Content::factory()->create(['summary' => null]);
+    $summary = Summary::factory()->for($user)->for($content)->create();
+
+    Livewire::actingAs($user)
+        ->test(ShowSummaryComponent::class, ['summary' => $summary])
+        ->assertSee('Fetching the transcript...');
+});

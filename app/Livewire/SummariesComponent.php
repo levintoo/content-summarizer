@@ -16,7 +16,9 @@ class SummariesComponent extends Component
 
     public function deleteSummary($id): void
     {
-        $summary = Summary::query()->whereBelongsTo(auth()->user())->findOrFail($id);
+        $summary = Summary::findOrFail($id);
+
+        $this->authorize('delete', $summary);
 
         DB::transaction(function () use ($summary) {
             $summary->content->chunks->each->delete();
@@ -29,7 +31,9 @@ class SummariesComponent extends Component
 
     public function shareSummary($id): void
     {
-        $summary = Summary::query()->whereBelongsTo(auth()->user())->findOrFail($id);
+        $summary = Summary::findOrFail($id);
+
+        $this->authorize('update', $summary);
 
         $summary->update([
             'shared' => true,
@@ -40,7 +44,9 @@ class SummariesComponent extends Component
 
     public function unShareSummary($id): void
     {
-        $summary = Summary::query()->whereBelongsTo(auth()->user())->findOrFail($id);
+        $summary = Summary::findOrFail($id);
+
+        $this->authorize('update', $summary);
 
         $summary->update([
             'shared' => false,

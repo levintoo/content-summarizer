@@ -67,7 +67,7 @@ class SettingsComponent extends Component
     {
         $user = auth()->user();
         $apikey = ApiKey::whereBelongsTo($user)->findOrFail($id);
-        if ($user->preference->api_key_id) {
+        if ((int) $user->preference?->api_key_id === (int) $apikey->id) {
             $user->preference()->update([
                 'api_key_id' => null,
             ]);
@@ -96,14 +96,17 @@ class SettingsComponent extends Component
             ->limit(1)
             ->get();
 
+        // Before an admin adds a provider these lists are simply empty.
+        $providerId = $providers->first()?->id;
+
         $models = AiModel::query()
-            ->where('provider_id', $providers[0]->id)
+            ->where('provider_id', $providerId)
             ->get();
 
         $apiKeys = ApiKey::query()
             ->with('provider:id,name')
             ->whereBelongsTo($user)
-            ->where('provider_id', $providers[0]->id)
+            ->where('provider_id', $providerId)
             ->simplePaginate(10);
 
         $preference = Preference::query()

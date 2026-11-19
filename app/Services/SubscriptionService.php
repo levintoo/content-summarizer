@@ -57,12 +57,14 @@ class SubscriptionService
 
         $authorization = $this->getOrCreateAuthorization($request['data'], $user);
 
-        Subscription::create([
+        // Paystack retries webhooks, so repeat deliveries must not create duplicates.
+        Subscription::updateOrCreate([
+            'subscription_code' => $request['data']['subscription_code'],
+        ], [
             'status' => $request['data']['status'],
             'user_id' => $user->id,
             'plan_id' => $plan->id,
             'authorization_id' => $authorization->id,
-            'subscription_code' => $request['data']['subscription_code'],
             'email_token' => $request['data']['email_token'],
             'next_payment_date' => $request['data']['next_payment_date'],
             'customer_code' => $request['data']['customer']['customer_code'],
@@ -85,12 +87,13 @@ class SubscriptionService
 
         $authorization = $this->getOrCreateAuthorization($request['data'], $user);
 
-        Charge::create([
+        Charge::firstOrCreate([
+            'reference' => $request['data']['reference'],
+        ], [
             'user_id' => $user->id,
             'authorization_id' => $authorization->id,
             'amount' => $request['data']['amount'],
             'currency' => $request['data']['currency'],
-            'reference' => $request['data']['reference'],
             'status' => $request['data']['status'],
             'invoice_code' => $request['data']['invoice_code'] ?? null,
             'channel' => $request['data']['channel'],
