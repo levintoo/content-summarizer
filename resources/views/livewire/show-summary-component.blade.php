@@ -28,7 +28,21 @@
                 </p>
             </div>
 
-            @if($content->summary || $summary->failed)
+            @if($summary->failed && ! $content->summary)
+                <div class="space-y-3 rounded-xl border border-red-200 bg-red-50 px-4 py-4 text-red-800">
+                    <div class="flex items-center gap-2 font-medium">
+                        <x-icon name="exclamation-triangle" class="size-5" />
+                        We couldn't finish this summary
+                    </div>
+                    <p class="text-sm">
+                        This usually means the video's captions are unavailable, or the AI provider rejected the request. Check your API key in settings, then try again.
+                    </p>
+                    <div class="flex flex-wrap gap-2">
+                        <x-button xs negative wire:navigate href="{{ route('summary.create') }}" label="Try again" />
+                        <x-button xs flat negative wire:navigate href="{{ route('settings') }}" label="Open settings" />
+                    </div>
+                </div>
+            @elseif($content->summary)
                 <div class="space-y-2.5" x-data="{ text: @js($content->summary ?: 'Something went wrong'), copyToClipboard() { navigator.clipboard.writeText(this.text); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
                     <div class="flex items-center gap-2.5">
                         <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
@@ -102,7 +116,7 @@
                                     <x-hugeicons-copy-01 class="size-4.5" />
                                 </x-mini-button>
 
-                                <x-mini-button wire:click.debounce="likeAnswer({{ $question->id }})" size="sm" title="Bad response" rounded flat gray interaction="primary">
+                                <x-mini-button wire:click.debounce="likeAnswer({{ $question->id }})" size="sm" title="Good response" rounded flat gray interaction="primary">
                                     @if($question->feedback === 1)
                                         <x-hugeicons-thumbs-up class="size-4.5 text-blue-500" />
                                     @else
@@ -110,7 +124,7 @@
                                     @endif
                                 </x-mini-button>
 
-                                <x-mini-button wire:click.debounce="dislikeAnswer({{ $question->id }})" size="sm" title="Good response" rounded flat gray interaction="primary">
+                                <x-mini-button wire:click.debounce="dislikeAnswer({{ $question->id }})" size="sm" title="Bad response" rounded flat gray interaction="primary">
                                     @if($question->feedback === -1)
                                     <x-hugeicons-thumbs-down class="size-4.5 text-blue-500" />
                                     @else
@@ -120,14 +134,15 @@
                             </div>
                         </div>
                     @else
-                        <div class="space-y-2.5">
+                        <div class="space-y-2.5" wire:poll.5s>
                             <div class="flex items-center gap-2.5">
                                 <x-hugeicons-ai-cloud class="animate-bounce text-blue-500 size-6.5 rounded-lg" />
                                 <div class="font-medium">{{ config('app.name') }}</div>
                             </div>
 
-                            <div class="prose max-w-none rounded-lg font-light">
-                                crafting ...
+                            <div class="flex items-center gap-2 font-light text-gray-600">
+                                <x-spinner class="size-4 text-blue-500" />
+                                Thinking...
                             </div>
                         </div>
                     @endif
@@ -222,11 +237,12 @@
                         <button
                             wire:target="ask"
                             wire:loading.attr="disabled"
-                            wire:ignore
                             type="submit"
-                            class="cursor-pointer rounded-full p-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none"
+                            title="Ask"
+                            class="cursor-pointer rounded-full p-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none disabled:cursor-wait disabled:opacity-70"
                         >
-                            <x-hugeicons-forward-02 class="text-white size-4.5" stroke-width="2"/>
+                            <x-hugeicons-forward-02 wire:loading.remove wire:target="ask" class="text-white size-4.5" stroke-width="2"/>
+                            <x-spinner wire:loading wire:target="ask" class="text-white size-4.5" />
                         </button>
                     </div>
                 </div>

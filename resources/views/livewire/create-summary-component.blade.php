@@ -84,14 +84,20 @@
                 <div class="bg-gray-50/30 absolute right-3 bottom-3">
                     <button
                         wire:loading.attr="disabled"
-                        wire:ignore
+                        wire:target="submit"
                         type="submit"
-                        class="cursor-pointer rounded-full p-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none"
+                        title="Summarize"
+                        class="cursor-pointer rounded-full p-2 bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-4 focus:ring-blue-300 focus:outline-none disabled:cursor-wait disabled:opacity-70"
                     >
-                        <x-hugeicons-forward-02 class="text-white size-4.5" stroke-width="2" />
+                        <x-hugeicons-forward-02 wire:loading.remove wire:target="submit" class="text-white size-4.5" stroke-width="2" />
+                        <x-spinner wire:loading wire:target="submit" class="text-white size-4.5" />
                     </button>
                 </div>
             </div>
         </form>
+
+        <p wire:loading wire:target="submit" class="mt-3 text-center text-sm text-slate-500">
+            Checking the video and starting your summary...
+        </p>
     </div>
 </div>

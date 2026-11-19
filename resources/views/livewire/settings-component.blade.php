@@ -11,9 +11,28 @@
                 Settings & Preferences
             </h1>
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+                Choose the AI provider, model and API key used for your summaries.
             </p>
         </div>
+
+        @if($providers->isEmpty())
+            <div class="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <x-icon name="exclamation-triangle" class="size-5 shrink-0" />
+                <p>
+                    No AI providers are set up yet, so summaries are not available.
+                    @if(auth()->user()->isAdmin())
+                        <a href="{{ url('/admin') }}" class="font-medium underline">Add a provider and model</a> in the admin panel.
+                    @else
+                        Please check back soon.
+                    @endif
+                </p>
+            </div>
+        @elseif($apiKeys->isEmpty())
+            <div class="flex items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-800">
+                <p>Add an API key from your provider to start creating summaries.</p>
+                <x-button xs primary label="Add key" x-on:click="$openModal('addApiKeyModal')" />
+            </div>
+        @endif
 
         <div class="space-y-6">
             <x-select wire:model="aiPreferenceForm.provider" icon="sparkles" placeholder="OpenAI" label="Preferred Provider" shadow="none">
@@ -38,7 +57,7 @@
             </x-select>
 
             <div class="inline-flex gap-2">
-                <x-button wire:click="saveAiPreference">Save</x-button>
+                <x-button wire:click="saveAiPreference" spinner="saveAiPreference">Save</x-button>
                 <x-button flat x-on:click="$openModal('manageApiKeysModal')">Manage API Keys</x-button>
             </div>
 
@@ -58,7 +77,7 @@
                                     @endif
                                 </div>
                                 <div class="grid place-items-end">
-                                    <x-mini-button wire:click="removeApiKey({{ $apiKey->id }})" title="Make this the default" size="sm" rose icon="trash" flat gray interaction="negative"/>
+                                    <x-mini-button wire:click="removeApiKey({{ $apiKey->id }})" wire:confirm="Remove this API key? Summaries will stop working until you add another." spinner="removeApiKey({{ $apiKey->id }})" title="Remove key" size="sm" rose icon="trash" flat gray interaction="negative"/>
                                 </div>
                             </div>
                             <div class="text-sm">
@@ -69,13 +88,25 @@
                             </div>
                         </div>
                     @empty
-                        <div class="text-gray-500 col-span-6">No API keys found. <button class="text-blue-500 underline" x-on:click="$openModal('addApiKeyModal')">Create one</button> to get started.</div>
+                        <div class="col-span-full">
+                            <x-empty-state title="No API keys yet" description="Keys are encrypted and only used for your own summaries.">
+                                <x-slot name="icon">
+                                    <x-icon name="key" class="size-6" />
+                                </x-slot>
+
+                                <x-slot name="actions">
+                                    <x-button primary label="Add a key" x-on:click="$openModal('addApiKeyModal')" />
+                                </x-slot>
+                            </x-empty-state>
+                        </div>
                     @endforelse
                 </div>
 
-                <div class="mt-2">
-                    {{ $apiKeys->links() }}
-                </div>
+                @if($apiKeys->hasPages())
+                    <div class="mt-2">
+                        {{ $apiKeys->links() }}
+                    </div>
+                @endif
 
                 <x-slot name="footer" class="flex justify-between gap-x-4">
                     <x-button label="Add New Key" x-on:click="$openModal('addApiKeyModal')" flat />
@@ -95,7 +126,7 @@
                         @endforelse
                     </x-select>
 
-                    <x-password wire:model="apiKeyForm.key" id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." corner="Name this key for future reference—it's not viewable again." />
+                    <x-password wire:model="apiKeyForm.key" id="api_key" icon="key" label="Api Key" placeholder="sk-abc123xyz456..." corner="You won't be able to view this key again." />
 
                     <x-input wire:model="apiKeyForm.name" id="api_key_name" icon="information-circle" label="Name" placeholder="Personal Key" />
                 </div>
@@ -104,7 +135,7 @@
                     <div class="flex gap-x-4">
                         <x-button flat label="Cancel" x-on:click="close" />
 
-                        <x-button primary label="Save" wire:click="saveApiKey" />
+                        <x-button primary label="Save" wire:click="saveApiKey" spinner="saveApiKey" />
                     </div>
                 </x-slot>
             </x-modal-card>
@@ -115,7 +146,7 @@
                 Other Preferences
             </h1>
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+                Set your default language, summary length and an optional custom prompt.
             </p>
         </div>
 
@@ -135,7 +166,7 @@
                 @endforelse
             </x-select>
 
-            <x-button wire:click="saveOtherPreference">Save</x-button>
+            <x-button wire:click="saveOtherPreference" spinner="saveOtherPreference">Save</x-button>
         </div>
     </div>
 </div>

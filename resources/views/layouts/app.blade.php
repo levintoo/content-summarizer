@@ -62,8 +62,8 @@
             <nav
                 x-cloak
                 x-show="open"
-                @click.outside="toggleOpen()"
-                class="fixed h-screen top-0 left-0 w- [350px] w-[21rem] z-50 p-2"
+                @click.outside="open = false"
+                class="fixed h-screen top-0 left-0 w-[21rem] z-50 p-2"
                 x-transition:enter="transition transform ease-in duration-200"
                 x-transition:enter-start="-translate-x-full"
                 x-transition:enter-end="translate-x-0"
@@ -85,7 +85,7 @@
                             </div>
                         </a>
 
-                        <x-mini-button @click="toggleOpen()" rounded flat gray interaction="info">
+                        <x-mini-button @click="toggleOpen()" title="Close Sidebar" rounded flat gray interaction="info">
                             <x-hugeicons-sidebar-left />
                         </x-mini-button>
                     </div>
@@ -143,14 +143,18 @@
                             Recent Summaries
                         </p>
 
-                        @foreach(\App\Models\Summary::query()->whereBelongsTo(auth()->user())->latest()->limit(5)->select(['id', 'content_id'])->with(['content:id,title'])->get() as $summary)
+                        @forelse(\App\Models\Summary::query()->whereBelongsTo(auth()->user())->latest()->limit(5)->select(['id', 'content_id'])->with(['content:id,title'])->get() as $summary)
                             <li>
                                 <x-nav-link wire:navigate href="{{ route('summary.show', $summary->id) }}" active="{{ route('summary.show', $summary->id) === request()->url() }}">
                                     <div class="shrink-0 text-transparent bg-blue-600 size-[6px] rounded-full">.</div>
                                     <span class="line-clamp-1">{{ $summary->content->title }}</span>
                                 </x-nav-link>
                             </li>
-                        @endforeach
+                        @empty
+                            <li class="px-3 text-sm text-gray-500">
+                                Your summaries will show up here.
+                            </li>
+                        @endforelse
                     </ul>
                 </div>
             </nav>

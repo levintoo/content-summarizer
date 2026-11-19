@@ -123,7 +123,7 @@
             <div class="max-w-3xl mx-auto mt-5 text-center">
                 <p class="text-lg text-gray-600">
 
-                    No more wasting time. Summarize videos, ask questions, and get what matters — instantly.
+                    No more wasting time. Summarize videos, ask questions, and get what matters, instantly.
                 </p>
             </div>
 
@@ -237,7 +237,7 @@
                                 <h3 class="block text-lg font-semibold text-gray-800">Paste a YouTube Link</h3>
                             </div>
                         </div>
-                        <p class="text-gray-600">Drop the URL of any video — lecture, podcast, tutorial, or anything else.</p>
+                        <p class="text-gray-600">Drop the URL of any video: lecture, podcast, tutorial, or anything else.</p>
                     </div>
                     <!-- End Card -->
 
@@ -266,7 +266,7 @@
                                 <h3 class="block text-lg font-semibold text-gray-800">Get Insights in Seconds</h3>
                             </div>
                         </div>
-                        <p class="text-gray-600">Read the summary, ask questions, and get instant answers — no fluff, just what matters.</p>
+                        <p class="text-gray-600">Read the summary, ask questions, and get instant answers. No fluff, just what matters.</p>
                     </div>
                     <!-- End Card -->
                 </div>
@@ -305,7 +305,7 @@
                     </div>
                     <h3 class="mt-6 font-semibold text-gray-900">Share Summaries with a Link</h3>
                     <p class="mt-2 text-gray-700">
-                        Generate shareable summary pages — perfect for teams, friends, or publishing.
+                        Generate shareable summary pages, perfect for teams, friends, or publishing.
                     </p>
                 </li>
 
@@ -329,7 +329,7 @@
                     </div>
                     <h3 class="mt-6 font-semibold text-gray-900">Choose Your AI Model</h3>
                     <p class="mt-2 text-gray-700">
-                        Pick from the avilable models — use what works best for you.
+                        Pick from the available models. Use what works best for you.
                     </p>
                 </li>
 
@@ -471,6 +471,7 @@
                         <!-- End Card -->
                     </div>
                     @empty
+                        <p class="col-span-full text-center text-gray-500">Pricing will be announced soon.</p>
                     @endforelse
                 </div>
                 <!-- End Grid -->
@@ -615,7 +616,7 @@
         <div class="max-w-3xl mx-auto mt-5 text-center">
             <p class="text-lg text-gray-600">
 
-                No more wasting time. Summarize videos, ask questions, and get what matters — instantly.
+                No more wasting time. Summarize videos, ask questions, and get what matters, instantly.
             </p>
         </div>
 

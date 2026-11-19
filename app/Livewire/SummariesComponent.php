@@ -57,7 +57,9 @@ class SummariesComponent extends Component
 
     public function render(): View
     {
-        $summaries = Summary::query()->latest()->whereBelongsTo(auth()->user())->with('content:id,title,channel,video_id')->paginate();
+        $summaries = Summary::query()->latest()->whereBelongsTo(auth()->user())->with('content:id,title,channel,video_id')
+            ->withExists(['content as is_ready' => fn ($query) => $query->whereNotNull('summary')])
+            ->paginate();
 
         return view('livewire.summaries-component', compact('summaries'));
     }

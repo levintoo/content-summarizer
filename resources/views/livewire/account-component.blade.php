@@ -151,6 +151,7 @@
                     </div>
                 @endif
             @empty
+                <x-empty-state class="lg:col-span-2" title="No plans available yet" description="Subscription plans will appear here once they are published." />
             @endforelse
         </div>
 
