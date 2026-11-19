@@ -40,6 +40,12 @@ return [
         'api' => env('PAYSTACK_API'),
     ],
 
+    // YouTube rejects outdated clients, so these can be updated without a code change.
+    'youtube' => [
+        'client_name' => env('YOUTUBE_CLIENT_NAME', 'ANDROID'),
+        'client_version' => env('YOUTUBE_CLIENT_VERSION', '20.10.38'),
+    ],
+
     'google' => [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
