@@ -2,19 +2,42 @@
 
 namespace App\Livewire\Forms;
 
-use Livewire\Attributes\Validate;
+use Illuminate\Validation\Rule;
 use Livewire\Form;
 
 class AiPreferenceForm extends Form
 {
-    #[Validate('required|exists:providers,id')]
     public $provider = '';
 
-    #[Validate('required|exists:ai_models,id')]
     public $model = '';
 
-    #[Validate('required|exists:api_keys,id')]
     public $key = '';
+
+    /**
+     * The model and key must belong to the chosen provider, and the key must
+     * belong to the current user, so nobody can spend another user's credits.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    protected function rules(): array
+    {
+        return [
+            'provider' => ['required', Rule::exists('providers', 'id')->whereNull('deleted_at')],
+            'model' => [
+                'required',
+                Rule::exists('ai_models', 'id')
+                    ->where('provider_id', $this->provider)
+                    ->whereNull('deleted_at'),
+            ],
+            'key' => [
+                'required',
+                Rule::exists('api_keys', 'id')
+                    ->where('user_id', auth()->id())
+                    ->where('provider_id', $this->provider)
+                    ->whereNull('deleted_at'),
+            ],
+        ];
+    }
 
     public function store(): void
     {

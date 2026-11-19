@@ -2,11 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Constants\CacheDuration;
 use App\Events\ContentSummarisedEvent;
 use App\Models\Summary;
 use App\Services\OpenAIService;
-use Cache;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -38,35 +36,17 @@ class CombineChunksJob implements ShouldQueue
         $preference = $user->preference;
         $content = $summary->content;
 
-        $unsummarizedChunks = $content->chunks->whereNull('summary');
-
-        $cacheKey = $this->summary->id.'combine-job-tries';
-
-        $tries = Cache::remember($cacheKey, CacheDuration::WEEK, function () use ($cacheKey) {
-            return Cache::get($cacheKey) ?? 0;
-        });
-
-        if ($unsummarizedChunks->isNotEmpty()) {
-            if ($tries < 10) {
-                $this->release(10);
-
-                return;
-            }
-
-            Cache::set($cacheKey, $tries + 1, CacheDuration::WEEK);
-        }
-
-        $transcript = $content->chunks->pluck('summary')->join(' ');
+        // The batch only calls this job once every chunk is summarized.
+        $transcript = $content->chunks()->oldest('id')->pluck('summary')->join(' ');
 
         $title = $content->title;
         $channel = $content->channel;
-        $videId = $content->video_id;
 
         $language = $this->userInput['language'] ?: $preference->language;
         $summary_length = $this->userInput['summary_length'] ?: $preference->summary_length;
 
         $userPrompt = $preference?->use_custom_prompt
-            ? $preference->custom_prompt.'The video is titled $title by '.$channel.'
+            ? $preference->custom_prompt.' The video is titled '.$title.' by '.$channel.'
                Transcript: '.$transcript
             : "
         Summarize the following YouTube video transcript in a structured format with bulleted sections and nested bullet points for content.
@@ -134,13 +114,11 @@ class CombineChunksJob implements ShouldQueue
             ],
         };
 
-        $response = Cache::rememberForever('combine-'.$videId, function () use ($model, $messages, $preference, $openAIService) {
-            return $openAIService->chat(
-                key: $preference->apiKey->key,
-                messages: $messages,
-                model: $model,
-            );
-        });
+        $response = $openAIService->cachedChat(
+            key: $preference->apiKey->key,
+            messages: $messages,
+            model: $model,
+        );
 
         $content->update([
             'summary' => $response['choices'][0]['message']['content'],

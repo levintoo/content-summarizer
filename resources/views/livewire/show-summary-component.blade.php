@@ -29,14 +29,14 @@
             </div>
 
             @if($content->summary || $summary->failed)
-                <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`'{{ addslashes($content->summary ? $content->summary : 'Something went wrong') }}'`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
+                <div class="space-y-2.5" x-data="{ text: @js($content->summary ?: 'Something went wrong'), copyToClipboard() { navigator.clipboard.writeText(this.text); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
                     <div class="flex items-center gap-2.5">
                         <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
                         <div class="font-medium">{{ config('app.name') }}</div>
                     </div>
 
                     <div class="prose max-w-none rounded-lg font-light">
-                        {{ \Illuminate\Mail\Markdown::parse($content->summary ? $content->summary : 'Something went wrong') }}
+                        {!! Str::markdown(strip_tags($content->summary ?: 'Something went wrong'), ['html_input' => 'escape', 'allow_unsafe_links' => false]) !!}
                     </div>
 
                     <div>
@@ -75,14 +75,14 @@
                         </p>
                     </div>
                     @if($question->answer || $summary->failed)
-                        <div class="space-y-2.5" x-data="{ copyToClipboard() { navigator.clipboard.writeText(`'{{ addslashes($question?->answer) }}'`); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
+                        <div class="space-y-2.5" x-data="{ text: @js($question?->answer ?? ''), copyToClipboard() { navigator.clipboard.writeText(this.text); $wireui.notify({ icon: 'success',title: 'Copied to clipboard!'}); } }">
                             <div class="flex items-center gap-2.5">
                                 <x-hugeicons-ai-cloud class="text-blue-500 size-6.5 rounded-lg" />
                                 <div class="font-medium">{{ config('app.name') }}</div>
                             </div>
 
                             <div class="prose max-w-none rounded-lg font-light">
-                                {{ \Illuminate\Mail\Markdown::parse($question?->answer ? : 'Something went wrong' ) }}
+                                {!! Str::markdown(strip_tags($question?->answer ?: 'Something went wrong'), ['html_input' => 'escape', 'allow_unsafe_links' => false]) !!}
                             </div>
 
                             <div>
