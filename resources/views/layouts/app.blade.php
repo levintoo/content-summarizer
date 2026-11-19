@@ -99,6 +99,13 @@
                         </li>
 
                         <li>
+                            <x-nav-link wire:navigate href="{{ route('transcript') }}" active="{{ request()->routeIs('transcript') }}">
+                                <x-hugeicons-closed-caption class="size-5.5"/>
+                                <span>Get Transcript</span>
+                            </x-nav-link>
+                        </li>
+
+                        <li>
                             <x-nav-link wire:navigate href="{{ route('summaries') }}" active="{{ request()->routeIs('summaries') }}">
                                 <x-hugeicons-note class="size-5.5"/>
                                 <span>Recent Summaries</span>

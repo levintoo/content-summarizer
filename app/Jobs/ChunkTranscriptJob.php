@@ -15,7 +15,6 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Throwable;
-use XMLReader;
 
 class ChunkTranscriptJob implements ShouldQueue
 {
@@ -29,47 +28,22 @@ class ChunkTranscriptJob implements ShouldQueue
 
         $youtube = new YoutubeService;
 
-        $transcriptXml = $youtube->getTranscript($videoId);
-
-        $reader = new XMLReader;
-        $reader->xml($transcriptXml);
-
         $transcriptChunk = '';
         $chunkJobs = [];
         $chunkSize = $this->summary->user->preference->aiModel->context_window * 0.5;
 
-        while ($reader->read()) {
-            if ($reader->nodeType == XMLReader::ELEMENT && $reader->name == 'text') {
+        foreach ($youtube->getTranscriptLines($videoId) as $line) {
+            $transcriptChunk .= $line['timestamp'].' '.$line['text'].' ';
 
-                $startInSeconds = (float) $reader->getAttribute('start');
-                $decodedText = htmlspecialchars_decode($reader->readString());
+            if (strlen($transcriptChunk) >= $chunkSize) {
+                $chunk = Chunk::create([
+                    'content_id' => $this->summary->content->id,
+                    'chunk' => $transcriptChunk,
+                ]);
 
-                $hours = floor((int) $startInSeconds / 3600);
-                $minutes = floor(((int) $startInSeconds % 3600) / 60);
-                $seconds = floor((int) $startInSeconds % 60);
+                $chunkJobs[] = new SummarizeChunkJob(chunk: $chunk, summary: $this->summary);
 
-                if ($hours > 0) {
-                    $formattedStart = sprintf('%d:%02d:%02d', $hours, $minutes, $seconds);
-                } elseif ($minutes > 0) {
-                    $formattedStart = sprintf('%02d:%02d', $minutes, $seconds);
-                } else {
-                    $formattedStart = sprintf('0:%02d', $seconds);
-                }
-
-                $lineWithTimestamp = $formattedStart.' '.$decodedText.' ';
-
-                $transcriptChunk .= $lineWithTimestamp;
-
-                if (strlen($transcriptChunk) >= $chunkSize) {
-                    $chunk = Chunk::create([
-                        'content_id' => $this->summary->content->id,
-                        'chunk' => $transcriptChunk,
-                    ]);
-
-                    $chunkJobs[] = new SummarizeChunkJob(chunk: $chunk, summary: $this->summary);
-
-                    $transcriptChunk = '';
-                }
+                $transcriptChunk = '';
             }
         }
 

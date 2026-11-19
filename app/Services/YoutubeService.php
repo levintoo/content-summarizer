@@ -73,4 +73,62 @@ class YoutubeService
             ])->body();
         });
     }
+
+    /**
+     * Parsed caption lines with timestamps, shared by the transcript page and
+     * the summary pipeline so both read captions the same way.
+     *
+     * @return array<int, array{start: float, timestamp: string, text: string}>
+     */
+    public function getTranscriptLines(string $videoId): array
+    {
+        $transcriptXml = (string) $this->getTranscript($videoId);
+
+        if (trim($transcriptXml) === '') {
+            return [];
+        }
+
+        $reader = new \XMLReader;
+        $reader->xml($transcriptXml);
+
+        $lines = [];
+
+        while (@$reader->read()) {
+            if ($reader->nodeType !== \XMLReader::ELEMENT || $reader->name !== 'text') {
+                continue;
+            }
+
+            $start = (float) $reader->getAttribute('start');
+            $text = trim(html_entity_decode($reader->readString(), ENT_QUOTES | ENT_HTML5));
+
+            if ($text === '') {
+                continue;
+            }
+
+            $lines[] = [
+                'start' => $start,
+                'timestamp' => $this->formatTimestamp($start),
+                'text' => $text,
+            ];
+        }
+
+        $reader->close();
+
+        return $lines;
+    }
+
+    public function formatTimestamp(float $startInSeconds): string
+    {
+        $totalSeconds = (int) $startInSeconds;
+
+        $hours = intdiv($totalSeconds, 3600);
+        $minutes = intdiv($totalSeconds % 3600, 60);
+        $seconds = $totalSeconds % 60;
+
+        return match (true) {
+            $hours > 0 => sprintf('%d:%02d:%02d', $hours, $minutes, $seconds),
+            $minutes > 0 => sprintf('%02d:%02d', $minutes, $seconds),
+            default => sprintf('0:%02d', $seconds),
+        };
+    }
 }

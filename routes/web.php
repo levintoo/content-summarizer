@@ -8,6 +8,7 @@ use App\Livewire\Public\WelcomeComponent;
 use App\Livewire\SettingsComponent;
 use App\Livewire\ShowSummaryComponent;
 use App\Livewire\SummariesComponent;
+use App\Livewire\TranscriptComponent;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', WelcomeComponent::class);
@@ -22,6 +23,7 @@ Route::middleware([
     Route::get('/summaries', SummariesComponent::class)->name('summaries');
     Route::get('/summary/create', CreateSummaryComponent::class)->name('summary.create');
     Route::get('/summary/{summary}', ShowSummaryComponent::class)->name('summary.show');
+    Route::get('/transcript', TranscriptComponent::class)->name('transcript');
     Route::get('/account', AccountComponent::class)->name('account');
     Route::get('/settings', SettingsComponent::class)->name('settings');
 });
