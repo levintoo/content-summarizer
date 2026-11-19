@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Events\ContentSummarisedEvent;
 use App\Models\Chunk;
 use App\Models\Summary;
 use App\Services\YoutubeService;
@@ -11,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 use XMLReader;
@@ -33,6 +35,7 @@ class ChunkTranscriptJob implements ShouldQueue
         $reader->xml($transcriptXml);
 
         $transcriptChunk = '';
+        $chunkJobs = [];
         $chunkSize = $this->summary->user->preference->aiModel->context_window * 0.5;
 
         while ($reader->read()) {
@@ -63,7 +66,7 @@ class ChunkTranscriptJob implements ShouldQueue
                         'chunk' => $transcriptChunk,
                     ]);
 
-                    SummarizeChunkJob::dispatch(chunk: $chunk, summary: $this->summary);
+                    $chunkJobs[] = new SummarizeChunkJob(chunk: $chunk, summary: $this->summary);
 
                     $transcriptChunk = '';
                 }
@@ -76,14 +79,39 @@ class ChunkTranscriptJob implements ShouldQueue
                 'chunk' => $transcriptChunk,
             ]);
 
-            SummarizeChunkJob::dispatch(chunk: $chunk, summary: $this->summary);
+            $chunkJobs[] = new SummarizeChunkJob(chunk: $chunk, summary: $this->summary);
         }
 
-        CombineChunksJob::dispatch(summary: $this->summary, userInput: $this->userInput);
+        if ($chunkJobs === []) {
+            Log::warning("No transcript text found for video [{$videoId}].");
+
+            self::markFailed($this->summary);
+
+            return;
+        }
+
+        $summary = $this->summary;
+        $userInput = $this->userInput;
+
+        // Combining waits for every chunk, and a single failed chunk fails the summary.
+        Bus::batch($chunkJobs)
+            ->name("summary-{$summary->id}")
+            ->then(static fn () => CombineChunksJob::dispatch(summary: $summary, userInput: $userInput))
+            ->catch(static fn () => self::markFailed($summary))
+            ->dispatch();
+    }
+
+    public static function markFailed(Summary $summary): void
+    {
+        $summary->update(['failed' => true]);
+
+        ContentSummarisedEvent::dispatch($summary->id);
     }
 
     public function failed(Throwable $throwable): void
     {
+        self::markFailed($this->summary);
+
         Log::error($throwable->getMessage());
     }
 }

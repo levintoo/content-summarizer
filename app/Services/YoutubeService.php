@@ -30,11 +30,11 @@ class YoutubeService
 
         $nodes = $xpath->query('//span[@itemtype="https://schema.org/ListItem"]//meta[@itemprop="name"]');
 
-        $channel = $nodes->item(0)->getAttribute('content');
+        $channel = $nodes->item(0)?->getAttribute('content');
 
-        $title = $doc->getElementsByTagName('title')->item(0)->textContent;
+        $title = $doc->getElementsByTagName('title')->item(0)?->textContent;
 
-        $info = $title || $channel ? ['title' => explode(' - YouTube', $title)[0], 'channel' => $channel ?? 'Youtube'] : null;
+        $info = $title || $channel ? ['title' => explode(' - YouTube', $title ?? 'Youtube')[0], 'channel' => $channel ?? 'Youtube'] : null;
 
         if ($info) {
             Cache::add($cacheKey, $info, 60 * 60 * 24 * 30);

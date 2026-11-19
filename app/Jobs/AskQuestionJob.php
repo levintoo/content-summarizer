@@ -12,9 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Throwable;
 
 class AskQuestionJob implements ShouldQueue
@@ -31,7 +29,6 @@ class AskQuestionJob implements ShouldQueue
     {
         $title = $this->content->title;
         $channel = $this->content->channel;
-        $videoId = $this->content->video_id;
 
         $language = $this->userInput['language'] ?: $this->preference->language;
 
@@ -73,13 +70,11 @@ class AskQuestionJob implements ShouldQueue
             ],
         };
 
-        $response = Cache::rememberForever('question-'.Str::slug($this->question->question).'-'.$videoId, function () use ($model, $messages, $openAIService) {
-            return $openAIService->chat(
-                key: $this->preference->apiKey->key,
-                messages: $messages,
-                model: $model
-            );
-        });
+        $response = $openAIService->cachedChat(
+            key: $this->preference->apiKey->key,
+            messages: $messages,
+            model: $model,
+        );
 
         $this->question->update([
             'answer' => $response['choices'][0]['message']['content'],

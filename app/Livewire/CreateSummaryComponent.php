@@ -103,7 +103,8 @@ class CreateSummaryComponent extends Component
 
             return $this->redirect(route('summary.show', $summary->id), navigate: true);
         } catch (Throwable $exception) {
-            dd($exception);
+            report($exception);
+
             $this->notification()->error('Error', 'Something went wrong. This is most likely caused by disabled subtitles for this video.');
 
             return;
