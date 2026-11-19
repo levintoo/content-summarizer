@@ -13,7 +13,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        // There is no dashboard route, so send signed-in users who open guest pages into the app.
+        $middleware->redirectUsersTo(fn () => route('summary.create'));
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

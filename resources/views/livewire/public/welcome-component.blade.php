@@ -56,12 +56,18 @@
 
             <!-- Button Group -->
             <div class="flex items-center py-1 gap-x-1 lg:gap-x-2 ms-auto lg:ps-6 lg:order-3 lg:col-span-3">
+                @auth
+                <a wire:navigate href="{{ route('summary.create') }}" class="inline-flex items-center px-3 py-2 text-sm font-medium text-white transition bg-blue-600 border border-transparent gap-x-2 text-nowrap rounded-xl hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700">
+                    Open app
+                </a>
+                @else
                 <a wire:navigate href="{{ route('login') }}" type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium text-black bg-white border border-gray-200 gap-x-2 text-nowrap rounded-xl hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none">
                     Login
                 </a>
                 <a wire:navigate href="{{ route('register') }}" type="button" class="inline-flex items-center px-3 py-2 text-sm font-medium text-white transition bg-blue-600 border border-transparent gap-x-2 text-nowrap rounded-xl hover:bg-blue-700 focus:outline-hidden focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
                     Sign Up
                 </a>
+                @endauth
 
                 <div class="lg:hidden">
                     <button type="button" class="hs-collapse-toggle size-9.5 flex justify-center items-center text-sm font-semibold rounded-xl border border-gray-200 text-black hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 disabled:opacity-50 disabled:pointer-events-none" id="hs-navbar-hcail-collapse" aria-expanded="false" aria-controls="hs-navbar-hcail" aria-label="Toggle navigation" data-hs-collapse="#hs-navbar-hcail">

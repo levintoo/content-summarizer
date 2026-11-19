@@ -30,3 +30,16 @@ test('users cannot authenticate with invalid password', function () {
 
     $this->assertGuest();
 });
+
+test('signed in users opening the login page are sent into the app', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/login')
+        ->assertRedirect(route('summary.create'));
+});
+
+test('the landing page offers to open the app when signed in', function () {
+    $this->actingAs(User::factory()->create())
+        ->get('/')
+        ->assertSee('Open app')
+        ->assertDontSee(route('login'));
+});
