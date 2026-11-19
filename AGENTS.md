@@ -12,7 +12,9 @@ Never trust request data.
 
 # Git
 
-Name branches by work type, such as `feat/short-description`, `fix/short-description`, `refactor/short-description`, or `chore/short-description`. Use `wip/short-description` for exploratory work. Use lowercase kebab case after the slash. Do not use an agent or tool name such as `codex/` as the prefix.
+Commit directly to the `dev` branch. Do not create new branches unless explicitly asked.
+
+When a branch is requested, name it by work type, such as `feat/short-description`, `fix/short-description`, `refactor/short-description`, or `chore/short-description`. Use `wip/short-description` for exploratory work. Use lowercase kebab case after the slash. Do not use an agent or tool name such as `codex/` as the prefix.
 
 Never create git commits automatically without explicit user review and approval of the completed changes. Always wait for the user to explicitly ask or authorize a commit before running git commit.
 
